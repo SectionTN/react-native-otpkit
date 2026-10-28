@@ -6,3 +6,4 @@ export type {
   UseOTPFieldOptions,
 } from './types';
 export { useOTPField } from './useOTPField';
+export { useResendTimer } from './useResendTimer';
