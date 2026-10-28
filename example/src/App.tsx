@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { LooksScreen } from './LooksScreen';
 import { SignInScreen } from './SignInScreen';
@@ -16,7 +17,9 @@ type TabKey = (typeof TABS)[number]['key'];
 export default function App() {
   return (
     <SafeAreaProvider>
-      <Main />
+      <KeyboardProvider>
+        <Main />
+      </KeyboardProvider>
     </SafeAreaProvider>
   );
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Animated, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { type Cell, OTPField, type OTPFieldProps } from 'react-native-otpkit';
 import { type Theme, useTheme } from './theme';
 
@@ -36,7 +37,11 @@ export function LooksScreen() {
   ];
 
   return (
-    <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+    <KeyboardAwareScrollView
+      contentContainerStyle={styles.content}
+      keyboardShouldPersistTaps="handled"
+      bottomOffset={48}
+    >
       {looks.map(({ id, label, props, rtl }) => {
         const field = (
           <OTPField
@@ -56,7 +61,7 @@ export function LooksScreen() {
           </View>
         );
       })}
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 }
 

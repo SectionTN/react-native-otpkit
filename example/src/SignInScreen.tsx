@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { OTPField, useResendTimer } from 'react-native-otpkit';
 import { verifyCode } from './fakeServer';
 import { type Theme, useTheme } from './theme';
@@ -10,7 +11,11 @@ export function SignInScreen() {
   const [step, setStep] = useState<'phone' | 'code'>('phone');
 
   return (
-    <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+    <KeyboardAwareScrollView
+      contentContainerStyle={styles.content}
+      keyboardShouldPersistTaps="handled"
+      bottomOffset={48}
+    >
       {step === 'phone' ? (
         <>
           <Text style={[styles.title, { color: theme.text }]}>Sign in</Text>
@@ -40,7 +45,7 @@ export function SignInScreen() {
       ) : (
         <CodeStep phone={phone} theme={theme} onChangeNumber={() => setStep('phone')} />
       )}
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 }
 
