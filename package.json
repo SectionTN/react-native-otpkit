@@ -118,6 +118,11 @@
       "@commitlint/config-conventional"
     ]
   },
+  "dependenciesMeta": {
+    "lefthook": {
+      "built": true
+    }
+  },
   "release-it": {
     "git": {
       "commitMessage": "chore: release ${version}",

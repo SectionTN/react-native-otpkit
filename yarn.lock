@@ -7850,6 +7850,9 @@ __metadata:
   peerDependencies:
     react: ">=19.0.0"
     react-native: ">=0.79.0"
+  dependenciesMeta:
+    lefthook:
+      built: true
   languageName: unknown
   linkType: soft
 
