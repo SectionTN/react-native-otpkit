@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Feature request
+    url: https://github.com/SectionTN/react-native-otpkit/discussions/new?category=ideas
+    about: Suggest a feature in GitHub Discussions.
+  - name: Discussions on GitHub
+    url: https://github.com/SectionTN/react-native-otpkit/discussions
+    about: Ask a question or get help with your setup.

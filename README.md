@@ -2,16 +2,16 @@
 
 An elegant and highly customizable One-Time Password (OTP) input library designed to simplify the implementation and enhance the user experience of OTP authentication flows in React Native Applications.
 
-* ✍ Written in TypeScript.
-* 📱 Supports Android / iOS / Web.
-* 🎨 Highly customizable.
-* 🚀 Easy to use.
-* 🍃 Lightweight.
-* 📏 Fully responsive.
-* 🌐 Supports RTL.
-* 🌛 Supports Dark Mode.
-* 💅 Supports custom styles.
-* 🎹 Supports custom keyboard types.
+- ✍ Written in TypeScript.
+- 📱 Supports Android / iOS / Web.
+- 🎨 Highly customizable.
+- 🚀 Easy to use.
+- 🍃 Lightweight.
+- 📏 Fully responsive.
+- 🌐 Supports RTL.
+- 🌛 Supports Dark Mode.
+- 💅 Supports custom styles.
+- 🎹 Supports custom keyboard types.
 
 ## 📸 Screenshots
 
@@ -24,6 +24,7 @@ These screenshots show the OTP Text Input in action, with different styles and c
 </div>
 
 # 🎞️ Gifs
+
 <div style="text-align: left; flex-direction: row">
 <img src="assets/advanced.gif" width="250px" height="550px" alt="Advanced Usage">
 </div>
@@ -31,6 +32,7 @@ These screenshots show the OTP Text Input in action, with different styles and c
 Web Demo Gif: [Web Gif](assets/web.gif)
 
 ## 💻 Installation
+
 NPM:
 ```sh
 npm install @sectiontn/otp-input
@@ -56,6 +58,7 @@ import { OTPTextInput, type OTPTextInputHandle } from '@sectiontn/otp-input';
 const OTPRef = useRef<OTPTextInputHandle | null>(null);
 ```
 ## ♻ Usage
+
 Call the `OTPTextInput` component in your JSX code and pass the required props to customize the OTP input field.
 
 ```typescript jsx
@@ -82,7 +85,7 @@ import { Platform } from 'react-native';
 There's no required prop as you can see, if you pass an empty props eg, `<OTPTextInput />`, the component will work with the default values.
 
 | Prop name           | Type                | Default Value | Description                                                                      |
-|:--------------------|:--------------------|:--------------|:---------------------------------------------------------------------------------|
+| :------------------ | :------------------ | :------------ | :------------------------------------------------------------------------------- |
 | defaultValue        | string              | " "           | The default value for the OTP input                                              |
 | inputCount          | number              | 4             | The number of OTP input fields                                                   |
 | tintColor           | string              | '#566193'     | The color of the focused OTP input field                                         |
