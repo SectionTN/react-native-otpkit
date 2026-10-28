@@ -113,6 +113,14 @@
       ]
     ]
   },
+  "codegenConfig": {
+    "name": "OTPKitSpec",
+    "type": "modules",
+    "jsSrcsDir": "src/specs",
+    "android": {
+      "javaPackageName": "me.sectiontn.otpkit"
+    }
+  },
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
