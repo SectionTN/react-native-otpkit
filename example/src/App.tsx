@@ -4,12 +4,14 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { LooksScreen } from './LooksScreen';
+import { RetrieverScreen } from './RetrieverScreen';
 import { SignInScreen } from './SignInScreen';
 import { useTheme } from './theme';
 
 const TABS = [
   { key: 'sign-in', title: 'Sign in', Screen: SignInScreen },
   { key: 'looks', title: 'Looks', Screen: LooksScreen },
+  { key: 'retriever', title: 'Retriever', Screen: RetrieverScreen },
 ] as const;
 
 type TabKey = (typeof TABS)[number]['key'];

@@ -5,4 +5,7 @@ export default defineConfig({
     include: ['src/**/__tests__/**/*.test.{ts,tsx}'],
     environment: 'node',
   },
+  define: {
+    __DEV__: 'true',
+  },
 });

@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
-import { OTPField, useResendTimer } from 'react-native-otpkit';
+import { OTPField, type OTPFieldRef, useResendTimer } from 'react-native-otpkit';
 import { verifyCode } from './fakeServer';
 import { type Theme, useTheme } from './theme';
 
@@ -52,6 +52,7 @@ export function SignInScreen() {
 function CodeStep(props: { phone: string; theme: Theme; onChangeNumber: () => void }) {
   const { phone, theme, onChangeNumber } = props;
   const timer = useResendTimer(30);
+  const field = useRef<OTPFieldRef>(null);
   const [message, setMessage] = useState('Enter the code');
 
   const onComplete = (code: string) => {
@@ -74,7 +75,7 @@ function CodeStep(props: { phone: string; theme: Theme; onChangeNumber: () => vo
       <Text style={[styles.hint, { color: theme.secondaryText }]}>
         {`Sent to ${phone || 'your phone'}. The code is 123456.`}
       </Text>
-      <OTPField testID="sign-in-field" onComplete={onComplete} />
+      <OTPField ref={field} testID="sign-in-field" sms="consent" onComplete={onComplete} />
       <Text testID="sign-in-status" style={[styles.status, { color: theme.secondaryText }]}>
         {message}
       </Text>
@@ -83,7 +84,10 @@ function CodeStep(props: { phone: string; theme: Theme; onChangeNumber: () => vo
         title={timer.canResend ? 'Resend code' : `Resend in ${minutes}:${seconds}`}
         theme={theme}
         disabled={!timer.canResend}
-        onPress={timer.restart}
+        onPress={() => {
+          timer.restart();
+          field.current?.listenForSms();
+        }}
       />
       <Button testID="change-number" title="Change number" theme={theme} onPress={onChangeNumber} />
     </>

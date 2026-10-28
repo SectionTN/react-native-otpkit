@@ -11,6 +11,7 @@ import {
 import { resolveLength } from './core/cells';
 import { separatorsAfter } from './core/groups';
 import { DefaultCell } from './DefaultCell';
+import { useSmsCode } from './sms/useSmsCode';
 import { HIDDEN_INPUT_OPACITY, metrics, palettes } from './theme';
 import type { OTPFieldProps } from './types';
 import { useOTPField } from './useOTPField';
@@ -37,6 +38,8 @@ export function OTPField(props: OTPFieldProps) {
     onBlur,
     placeholder,
     groups,
+    sms: smsMode,
+    smsSender,
     caret = true,
     caretStyle,
     statusMessages,
@@ -85,13 +88,34 @@ export function OTPField(props: OTPFieldProps) {
   const message = useStatusAnnouncement(field.status, statusMessages);
   const verifying = field.status === 'verifying';
   const { focus, blur, clear, setValue } = field;
+  const listening = Boolean(smsMode) && !disabled;
+  const sms = useSmsCode({
+    mode: smsMode || 'consent',
+    enabled: listening,
+    length,
+    type,
+    sender: smsSender,
+  });
+  const listenAgain = sms.start;
 
-  useImperativeHandle(ref, () => ({ focus, blur, clear, setValue, listenForSms: () => {} }), [
-    focus,
-    blur,
-    clear,
-    setValue,
-  ]);
+  // A received message goes through the paste rules, then onComplete.
+  useEffect(() => {
+    if (sms.message != null) setValue(sms.message);
+  }, [sms.message, setValue]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      focus,
+      blur,
+      clear,
+      setValue,
+      listenForSms: () => {
+        if (listening) listenAgain();
+      },
+    }),
+    [focus, blur, clear, setValue, listening, listenAgain],
+  );
 
   // Android often refuses to open the keyboard during a screen transition, so it waits.
   useEffect(() => {

@@ -111,6 +111,10 @@ export interface OTPFieldProps
   /** A blinking caret in the active cell. Default true. */
   caret?: boolean;
   caretStyle?: StyleProp<ViewStyle>;
+  /** Read the code from an SMS on Android (WebOTP on web). Off by default. */
+  sms?: false | SmsMode;
+  /** Consent mode only: the phone number the message must come from. */
+  smsSender?: string;
   statusMessages?: StatusMessages;
   /** One character shown in each empty cell. */
   placeholder?: string;
@@ -137,4 +141,32 @@ export interface OTPFieldProps
   onFocus?: () => void;
   onBlur?: () => void;
   ref?: Ref<OTPFieldRef>;
+}
+
+export type SmsMode = 'consent' | 'retriever';
+
+export type SmsStatus = 'idle' | 'listening' | 'received' | 'timeout' | 'denied' | 'unavailable';
+
+export interface UseSmsCodeOptions {
+  /** `'consent'` asks the user to share one message; `'retriever'` needs the app hash in it. */
+  mode: SmsMode;
+  /** Code length for the default extraction. Default 6. */
+  length?: number;
+  /** Code characters for the default extraction. Default `'numeric'`. */
+  type?: CodeType;
+  /** Consent mode only: the phone number the message must come from. */
+  sender?: string;
+  /** Replaces the default extraction of the code from the message. */
+  extract?: (message: string) => string | null;
+  /** Listen on mount. Default true. */
+  enabled?: boolean;
+}
+
+export interface SmsCodeState {
+  code: string | null;
+  message: string | null;
+  status: SmsStatus;
+  /** Listens again, for example after a resend. */
+  start(): void;
+  stop(): void;
 }
