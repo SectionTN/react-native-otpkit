@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { HeadlessScreen } from './HeadlessScreen';
 import { LooksScreen } from './LooksScreen';
 import { RetrieverScreen } from './RetrieverScreen';
 import { SignInScreen } from './SignInScreen';
@@ -12,6 +13,7 @@ const TABS = [
   { key: 'sign-in', title: 'Sign in', Screen: SignInScreen },
   { key: 'looks', title: 'Looks', Screen: LooksScreen },
   { key: 'retriever', title: 'Retriever', Screen: RetrieverScreen },
+  { key: 'headless', title: 'Headless', Screen: HeadlessScreen },
 ] as const;
 
 type TabKey = (typeof TABS)[number]['key'];
