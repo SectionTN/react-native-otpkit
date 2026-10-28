@@ -95,9 +95,23 @@ export interface OTPFieldRef {
   listenForSms(): void;
 }
 
+/** What screen readers hear when the status changes. */
+export interface StatusMessages {
+  /** Default "Verifying code". */
+  verifying?: string;
+  /** Default "Incorrect code". */
+  error?: string;
+  /** Default "Code verified". */
+  success?: string;
+}
+
 export interface OTPFieldProps
   extends Omit<ViewProps, 'children'>,
     Omit<UseOTPFieldOptions, 'onFocus' | 'onBlur'> {
+  /** A blinking caret in the active cell. Default true. */
+  caret?: boolean;
+  caretStyle?: StyleProp<ViewStyle>;
+  statusMessages?: StatusMessages;
   /** One character shown in each empty cell. */
   placeholder?: string;
   /** Cell counts per group, for example `[3, 3]`. A separator shows between groups. */

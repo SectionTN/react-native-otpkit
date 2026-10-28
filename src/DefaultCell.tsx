@@ -6,6 +6,7 @@ import {
   View,
   type ViewStyle,
 } from 'react-native';
+import { Caret } from './Caret';
 import { metrics, type Palette } from './theme';
 import type { Cell } from './types';
 
@@ -14,6 +15,9 @@ export interface DefaultCellProps {
   palette: Palette;
   variant: 'box' | 'underline';
   disabled: boolean;
+  caret: boolean;
+  reduceMotion: boolean;
+  caretStyle?: StyleProp<ViewStyle>;
   placeholder?: string;
   cellStyle?: StyleProp<ViewStyle>;
   focusedCellStyle?: StyleProp<ViewStyle>;
@@ -60,6 +64,8 @@ export function DefaultCell(props: DefaultCellProps) {
     >
       {cell.isFilled ? (
         <Text style={[styles.text, { color: palette.text }, props.textStyle]}>{cell.char}</Text>
+      ) : cell.isActive && props.caret ? (
+        <Caret color={palette.caret} reduceMotion={props.reduceMotion} style={props.caretStyle} />
       ) : showPlaceholder ? (
         <Text
           style={[

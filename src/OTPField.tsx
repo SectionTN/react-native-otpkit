@@ -1,5 +1,13 @@
 import { Fragment, useEffect, useImperativeHandle } from 'react';
-import { Platform, StyleSheet, TextInput, useColorScheme, View } from 'react-native';
+import {
+  Animated,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  useColorScheme,
+  View,
+} from 'react-native';
 import { resolveLength } from './core/cells';
 import { separatorsAfter } from './core/groups';
 import { DefaultCell } from './DefaultCell';
@@ -7,6 +15,9 @@ import { HIDDEN_INPUT_OPACITY, metrics, palettes } from './theme';
 import type { OTPFieldProps } from './types';
 import { useOTPField } from './useOTPField';
 import { usePropWarnings } from './usePropWarnings';
+import { useReduceMotion } from './useReduceMotion';
+import { useShake } from './useShake';
+import { useStatusAnnouncement } from './useStatusAnnouncement';
 
 export function OTPField(props: OTPFieldProps) {
   const {
@@ -26,6 +37,9 @@ export function OTPField(props: OTPFieldProps) {
     onBlur,
     placeholder,
     groups,
+    caret = true,
+    caretStyle,
+    statusMessages,
     autoFocus = true,
     variant = 'box',
     cellStyle,
@@ -66,6 +80,10 @@ export function OTPField(props: OTPFieldProps) {
   });
   const palette = palettes[useColorScheme() === 'dark' ? 'dark' : 'light'];
   const separators = separatorsAfter(groups, length);
+  const reduceMotion = useReduceMotion();
+  const shake = useShake(field.status, reduceMotion);
+  const message = useStatusAnnouncement(field.status, statusMessages);
+  const verifying = field.status === 'verifying';
   const { focus, blur, clear, setValue } = field;
 
   useImperativeHandle(ref, () => ({ focus, blur, clear, setValue, listenForSms: () => {} }), [
@@ -92,8 +110,8 @@ export function OTPField(props: OTPFieldProps) {
 
   return (
     <View {...viewProps} testID={testID} style={[styles.root, style]}>
-      <View
-        style={styles.row}
+      <Animated.View
+        style={[styles.row, { opacity: verifying ? 0.5 : 1, transform: [{ translateX: shake }] }]}
         accessibilityElementsHidden
         importantForAccessibility="no-hide-descendants"
       >
@@ -111,6 +129,9 @@ export function OTPField(props: OTPFieldProps) {
                   palette={palette}
                   variant={variant}
                   disabled={disabled ?? false}
+                  caret={caret && !verifying}
+                  caretStyle={caretStyle}
+                  reduceMotion={reduceMotion}
                   placeholder={placeholder}
                   cellStyle={cellStyle}
                   focusedCellStyle={focusedCellStyle}
@@ -131,7 +152,7 @@ export function OTPField(props: OTPFieldProps) {
               ))}
           </Fragment>
         ))}
-      </View>
+      </Animated.View>
       <TextInput
         {...field.inputProps}
         {...textInputProps}
@@ -149,6 +170,11 @@ export function OTPField(props: OTPFieldProps) {
         accessibilityValue={{ text: spoken }}
         style={[StyleSheet.absoluteFill, styles.input, textInputProps?.style]}
       />
+      {Platform.OS !== 'ios' && (
+        <Text accessibilityLiveRegion="polite" style={styles.live}>
+          {message}
+        </Text>
+      )}
     </View>
   );
 }
@@ -170,4 +196,6 @@ const styles = StyleSheet.create({
     color: 'transparent',
     ...Platform.select({ web: { outlineWidth: 0 } }),
   },
+  // Visible to the accessibility tree, invisible on screen; an alpha of 0 would hide it from both.
+  live: { position: 'absolute', width: 1, height: 1, overflow: 'hidden', color: 'transparent' },
 });

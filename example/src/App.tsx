@@ -3,9 +3,13 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { LooksScreen } from './LooksScreen';
+import { SignInScreen } from './SignInScreen';
 import { useTheme } from './theme';
 
-const TABS = [{ key: 'looks', title: 'Looks', Screen: LooksScreen }] as const;
+const TABS = [
+  { key: 'sign-in', title: 'Sign in', Screen: SignInScreen },
+  { key: 'looks', title: 'Looks', Screen: LooksScreen },
+] as const;
 
 type TabKey = (typeof TABS)[number]['key'];
 
@@ -19,8 +23,8 @@ export default function App() {
 
 function Main() {
   const theme = useTheme();
-  const [tab, setTab] = useState<TabKey>('looks');
-  const Screen = TABS.find((entry) => entry.key === tab)?.Screen ?? LooksScreen;
+  const [tab, setTab] = useState<TabKey>('sign-in');
+  const Screen = TABS.find((entry) => entry.key === tab)?.Screen ?? SignInScreen;
 
   return (
     <SafeAreaView style={[styles.screen, { backgroundColor: theme.background }]}>
