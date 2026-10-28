@@ -1,5 +1,12 @@
-import type { ComponentRef, RefObject } from 'react';
-import type { TextInput, TextInputProps } from 'react-native';
+import type { ComponentRef, ReactNode, Ref, RefObject } from 'react';
+import type {
+  StyleProp,
+  TextInput,
+  TextInputProps,
+  TextStyle,
+  ViewProps,
+  ViewStyle,
+} from 'react-native';
 
 /** `'numeric'`, `'alpha'` (ASCII letters), `'alphanumeric'`, or a RegExp tested on each character. */
 export type CodeType = 'numeric' | 'alpha' | 'alphanumeric' | RegExp;
@@ -75,4 +82,45 @@ export interface OTPFieldState {
   blur(): void;
   clear(): void;
   setValue(text: string): void;
+}
+
+export interface OTPFieldRef {
+  focus(): void;
+  blur(): void;
+  /** Empties the field. */
+  clear(): void;
+  /** Runs `text` through the paste rules, as if the user pasted it. */
+  setValue(text: string): void;
+  /** Starts listening for the SMS again, for example after a resend. */
+  listenForSms(): void;
+}
+
+export interface OTPFieldProps
+  extends Omit<ViewProps, 'children'>,
+    Omit<UseOTPFieldOptions, 'onFocus' | 'onBlur'> {
+  /** One character shown in each empty cell. */
+  placeholder?: string;
+  /** Cell counts per group, for example `[3, 3]`. A separator shows between groups. */
+  groups?: number[];
+  /** Focus on mount. Default true. */
+  autoFocus?: boolean;
+  /** Default `'box'`. */
+  variant?: 'box' | 'underline';
+  cellStyle?: StyleProp<ViewStyle>;
+  focusedCellStyle?: StyleProp<ViewStyle>;
+  filledCellStyle?: StyleProp<ViewStyle>;
+  errorCellStyle?: StyleProp<ViewStyle>;
+  successCellStyle?: StyleProp<ViewStyle>;
+  disabledCellStyle?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
+  placeholderStyle?: StyleProp<TextStyle>;
+  /** Replaces a cell's content. */
+  renderCell?: (cell: Cell) => ReactNode;
+  /** Replaces the separator drawn after cell `afterIndex`. */
+  renderSeparator?: (afterIndex: number) => ReactNode;
+  /** Passed to the hidden `TextInput`, after the field's own props. */
+  textInputProps?: Omit<TextInputProps, 'value' | 'onChangeText'>;
+  onFocus?: () => void;
+  onBlur?: () => void;
+  ref?: Ref<OTPFieldRef>;
 }
