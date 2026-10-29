@@ -62,6 +62,8 @@ export interface OTPInputProps {
   onFocus: () => void;
   onBlur: () => void;
   editable: boolean;
+  /** On web this renders a disabled input, which takes no focus; `editable` alone renders a read-only one. */
+  'aria-disabled': boolean;
   inputMode: 'numeric' | 'text';
   autoComplete: TextInputProps['autoComplete'];
   autoCapitalize: 'none' | 'characters';

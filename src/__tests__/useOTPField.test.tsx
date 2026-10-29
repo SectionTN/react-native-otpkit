@@ -223,6 +223,13 @@ describe('useOTPField', () => {
     expect(result.current.value).toBe('');
   });
 
+  it('marks the input disabled, which react-native-web needs to drop it from focus', () => {
+    const { result, rerender } = setup({ disabled: true });
+    expect(result.current.inputProps['aria-disabled']).toBe(true);
+    rerender({ disabled: false });
+    expect(result.current.inputProps['aria-disabled']).toBe(false);
+  });
+
   it('runs setValue through the paste rules', () => {
     const onComplete = vi.fn();
     const { result } = setup({ onComplete });

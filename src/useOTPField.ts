@@ -158,6 +158,7 @@ export function useOTPField(options: UseOTPFieldOptions = {}): OTPFieldState {
       onFocus,
       onBlur,
       editable: !disabled,
+      'aria-disabled': disabled,
       inputMode: type === 'numeric' ? 'numeric' : 'text',
       autoComplete: AUTOFILL,
       autoCapitalize: type === 'alpha' || type === 'alphanumeric' ? 'characters' : 'none',
