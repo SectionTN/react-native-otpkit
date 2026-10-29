@@ -8539,7 +8539,7 @@ __metadata:
     vitest: "npm:5.0.5"
   peerDependencies:
     react: ">=19.0.0"
-    react-native: ">=0.79.0"
+    react-native: ">=0.86.0"
   dependenciesMeta:
     lefthook:
       built: true
