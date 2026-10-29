@@ -27,6 +27,8 @@ export async function openTab(screen: Screen, key: string): Promise<void> {
 
 // The hidden input of a field on the Looks tab, scrolled into view. On iOS the keyboard of the autofocused box covers every field below groups.
 export async function input(screen: Screen, id: string): Promise<Locator> {
+  // A scroll that starts before the tab renders carries the top field away, so box must show first.
+  await screen.getByTestId('box-input').waitFor({ state: 'visible' });
   const node = screen.getByTestId(`${id}-input`);
   await screen.scrollUntilVisible(node, { direction: 'down' });
   return node;
