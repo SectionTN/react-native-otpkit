@@ -112,6 +112,38 @@ describe('useOTPField', () => {
     expect(result.current.value).toBe('123456');
   });
 
+  it('stays usable when onComplete clears the field before returning its promise', () => {
+    const verify = deferred();
+    const { result, type } = setup({
+      onComplete: () => {
+        result.current.clear();
+        return verify.promise;
+      },
+    });
+    type('123456');
+    expect(result.current.status).toBe('idle');
+    type('1');
+    expect(result.current.value).toBe('1');
+  });
+
+  it('drops a pending verify status when an edit comes in under a controlled status', () => {
+    const options: UseOTPFieldOptions = { onComplete: () => deferred().promise, status: 'idle' };
+    const { result, type, rerender } = setup(options);
+    type('123456');
+    type('12345');
+    rerender({ ...options, status: undefined });
+    expect(result.current.status).toBe('idle');
+  });
+
+  it('calls onComplete when a different full code replaces a full one', async () => {
+    const onComplete = vi.fn(fail);
+    const { result, type } = setup({ onComplete, clearOnError: false });
+    type('111111');
+    await flush();
+    act(() => result.current.setValue('Your code is 123456'));
+    expect(onComplete.mock.calls).toEqual([['111111'], ['123456']]);
+  });
+
   it('errors again on the same wrong code', async () => {
     vi.useFakeTimers();
     const onComplete = vi.fn(fail);

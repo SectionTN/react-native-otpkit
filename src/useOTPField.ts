@@ -31,7 +31,8 @@ export function useOTPField(options: UseOTPFieldOptions = {}): OTPFieldState {
   const inputRef = useRef<ComponentRef<typeof TextInput> | null>(null);
   const attempt = useRef(0);
   const clearTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const wasComplete = useRef<boolean | null>(null);
+  // The last complete code, null while incomplete, undefined before the first effect.
+  const completed = useRef<string | null | undefined>(undefined);
 
   const value = sanitize(options.value ?? internal, rules);
   const status = options.status ?? internalStatus;
@@ -52,9 +53,7 @@ export function useOTPField(options: UseOTPFieldOptions = {}): OTPFieldState {
       const current = latest.current;
       if (next === current.value) return;
       cancelPending();
-      if (current.internalStatus === 'error' || current.internalStatus === 'success') {
-        setInternalStatus('idle');
-      }
+      if (current.internalStatus !== 'idle') setInternalStatus('idle');
       current.value = next;
       setInternal(next);
       current.options.onChange?.(next);
@@ -109,15 +108,17 @@ export function useOTPField(options: UseOTPFieldOptions = {}): OTPFieldState {
   }, []);
 
   useEffect(() => {
-    const complete = value.length === length;
-    const was = wasComplete.current;
-    wasComplete.current = complete;
-    if (was === null || was || !complete) return;
+    const code = value.length === length ? value : null;
+    const last = completed.current;
+    completed.current = code;
+    if (last === undefined || code === null || code === last) return;
     const { options } = latest.current;
     attempt.current += 1;
     const id = attempt.current;
     clearTimeout(clearTimer.current);
     const result = options.onComplete?.(value);
+    // onComplete cleared or replaced the code itself, so this attempt is over.
+    if (id !== attempt.current) return;
     if (isThenable(result)) {
       setInternalStatus('verifying');
       result.then(
