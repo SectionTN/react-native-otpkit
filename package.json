@@ -1,6 +1,6 @@
 {
   "name": "react-native-otpkit",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0",
   "description": "A customizable OTP code field for React Native on Android, iOS and the web.",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
