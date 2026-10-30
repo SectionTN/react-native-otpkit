@@ -33,7 +33,12 @@ A one-time code field for React Native. It draws its cells over one hidden `Text
 ## Installation
 
 ```sh
+# npm
 npm install react-native-otpkit
+# Yarn
+yarn add react-native-otpkit
+# Bun
+bun add react-native-otpkit
 ```
 
 Requirements:
