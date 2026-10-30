@@ -15,19 +15,12 @@ export interface DefaultCellProps {
   cell: Cell;
   palette: Palette;
   variant: Variant;
-  disabled: boolean;
   caret: boolean;
   reduceMotion: boolean;
   caretStyle?: StyleProp<ViewStyle>;
   placeholder?: string;
   cellStyle?: StyleProp<ViewStyle>;
-  focusedCellStyle?: StyleProp<ViewStyle>;
-  filledCellStyle?: StyleProp<ViewStyle>;
-  errorCellStyle?: StyleProp<ViewStyle>;
-  successCellStyle?: StyleProp<ViewStyle>;
-  disabledCellStyle?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
-  placeholderStyle?: StyleProp<TextStyle>;
 }
 
 function borderColor(cell: Cell, palette: Palette): string {
@@ -37,45 +30,26 @@ function borderColor(cell: Cell, palette: Palette): string {
 }
 
 export function DefaultCell(props: DefaultCellProps) {
-  const { cell, palette, variant, disabled, placeholder } = props;
+  const { cell, palette, variant, placeholder } = props;
   const borderWidth = cell.isActive ? metrics.activeBorderWidth : metrics.borderWidth;
   const look: ViewStyle =
     variant === 'box'
       ? {
           borderWidth,
           borderRadius: metrics.radius,
-          backgroundColor: disabled ? palette.disabled : palette.cell,
+          backgroundColor: cell.isDisabled ? palette.disabled : palette.cell,
         }
       : { borderBottomWidth: borderWidth };
   const content = cellContent(cell, props.caret, placeholder);
 
   return (
-    <View
-      style={[
-        styles.cell,
-        look,
-        { borderColor: borderColor(cell, palette) },
-        props.cellStyle,
-        cell.isActive && props.focusedCellStyle,
-        cell.isFilled && props.filledCellStyle,
-        cell.status === 'error' && props.errorCellStyle,
-        cell.status === 'success' && props.successCellStyle,
-        disabled && props.disabledCellStyle,
-      ]}
-    >
+    <View style={[styles.cell, look, { borderColor: borderColor(cell, palette) }, props.cellStyle]}>
       {content === 'char' ? (
         <Text style={[styles.text, { color: palette.text }, props.textStyle]}>{cell.char}</Text>
       ) : content === 'caret' ? (
         <Caret color={palette.caret} reduceMotion={props.reduceMotion} style={props.caretStyle} />
       ) : content === 'placeholder' ? (
-        <Text
-          style={[
-            styles.text,
-            { color: palette.placeholder },
-            props.textStyle,
-            props.placeholderStyle,
-          ]}
-        >
+        <Text style={[styles.text, { color: palette.placeholder }, props.textStyle]}>
           {placeholder}
         </Text>
       ) : null}

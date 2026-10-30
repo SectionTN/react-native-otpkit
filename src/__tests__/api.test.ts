@@ -1,5 +1,13 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
-import { CodeType, type OTPFieldProps, OTPStatus, SmsMode, SmsStatus, Variant } from '../types';
+import {
+  type Cell,
+  CodeType,
+  type OTPFieldProps,
+  OTPStatus,
+  SmsMode,
+  SmsStatus,
+  Variant,
+} from '../types';
 
 describe('option constants', () => {
   it('hold the strings the props take', () => {
@@ -39,5 +47,27 @@ describe('OTPFieldProps', () => {
     // @ts-expect-error the sender moved into sms
     const old: OTPFieldProps = { smsSender: '5551234' };
     expect([props, old]).toHaveLength(2);
+  });
+});
+
+describe('cell styles', () => {
+  it('take a function of the cell', () => {
+    const props: OTPFieldProps = {
+      cellStyle: (cell) => cell.isActive && { borderColor: '#FF6F61' },
+      textStyle: ({ isFilled }) => !isFilled && { color: '#A3A3A3' },
+    };
+    expect(props).toBeDefined();
+    expectTypeOf<Cell['isDisabled']>().toEqualTypeOf<boolean>();
+  });
+
+  it('replace the per-state style props', () => {
+    type Removed =
+      | 'focusedCellStyle'
+      | 'filledCellStyle'
+      | 'errorCellStyle'
+      | 'successCellStyle'
+      | 'disabledCellStyle'
+      | 'placeholderStyle';
+    expectTypeOf<Extract<keyof OTPFieldProps, Removed>>().toBeNever();
   });
 });

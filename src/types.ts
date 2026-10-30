@@ -38,8 +38,12 @@ export interface Cell {
   isFilled: boolean;
   /** Where the next character lands, only while focused. */
   isActive: boolean;
+  isDisabled: boolean;
   status: OTPStatus;
 }
+
+/** A style, or a function of the cell that returns one. */
+export type CellStyleProp<T> = StyleProp<T> | ((cell: Cell) => StyleProp<T>);
 
 export interface UseOTPFieldOptions {
   /** Number of cells. Default 6. */
@@ -142,14 +146,10 @@ export interface OTPFieldProps
   autoFocus?: boolean;
   /** Default `'box'`. */
   variant?: Variant;
-  cellStyle?: StyleProp<ViewStyle>;
-  focusedCellStyle?: StyleProp<ViewStyle>;
-  filledCellStyle?: StyleProp<ViewStyle>;
-  errorCellStyle?: StyleProp<ViewStyle>;
-  successCellStyle?: StyleProp<ViewStyle>;
-  disabledCellStyle?: StyleProp<ViewStyle>;
-  textStyle?: StyleProp<TextStyle>;
-  placeholderStyle?: StyleProp<TextStyle>;
+  /** Style for each built-in cell. */
+  cellStyle?: CellStyleProp<ViewStyle>;
+  /** Style for the characters and the placeholder. */
+  textStyle?: CellStyleProp<TextStyle>;
   /** Replaces a cell's content. */
   renderCell?: (cell: Cell) => ReactNode;
   /** Replaces the separator drawn after cell `afterIndex`. */

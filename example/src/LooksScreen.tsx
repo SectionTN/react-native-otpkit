@@ -39,6 +39,11 @@ export function LooksScreen() {
       label: 'Larger cells',
       props: { length: 4, cellStyle: { width: 64, height: 64 } },
     },
+    {
+      id: 'tint',
+      label: 'Style function',
+      props: { cellStyle: ({ isActive }) => isActive && { borderColor: '#FF6F61' } },
+    },
   ];
 
   return (

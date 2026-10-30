@@ -10,7 +10,7 @@ import {
   View,
   type ViewStyle,
 } from 'react-native';
-import { resolveLength } from './core/cells';
+import { resolveLength, styleFor } from './core/cells';
 import { separatorsAfter } from './core/groups';
 import { DefaultCell } from './DefaultCell';
 import { resolveSms } from './sms/resolveSms';
@@ -59,13 +59,7 @@ export function OTPField(props: OTPFieldProps) {
     autoFocus = true,
     variant = 'box',
     cellStyle,
-    focusedCellStyle,
-    filledCellStyle,
-    errorCellStyle,
-    successCellStyle,
-    disabledCellStyle,
     textStyle,
-    placeholderStyle,
     renderCell,
     renderSeparator,
     textInputProps,
@@ -141,7 +135,6 @@ export function OTPField(props: OTPFieldProps) {
   const spoken = secure
     ? `${field.value.length} of ${length} entered`
     : field.value.split('').join(' ');
-  const slot = renderCell ? undefined : [styles.slot, slotSize(cellStyle)];
 
   return (
     <View {...viewProps} testID={testID} style={[styles.root, style]}>
@@ -150,40 +143,39 @@ export function OTPField(props: OTPFieldProps) {
         accessibilityElementsHidden
         importantForAccessibility="no-hide-descendants"
       >
-        {field.cells.map((cell) => (
-          <Fragment key={cell.index}>
-            <View testID={testID ? `${testID}-cell-${cell.index}` : undefined} style={slot}>
-              {renderCell ? (
-                renderCell(cell)
-              ) : (
-                <DefaultCell
-                  cell={cell}
-                  palette={palette}
-                  variant={variant}
-                  disabled={disabled ?? false}
-                  caret={caret && !verifying}
-                  caretStyle={caretStyle}
-                  reduceMotion={reduceMotion}
-                  placeholder={placeholder}
-                  cellStyle={cellStyle}
-                  focusedCellStyle={focusedCellStyle}
-                  filledCellStyle={filledCellStyle}
-                  errorCellStyle={errorCellStyle}
-                  successCellStyle={successCellStyle}
-                  disabledCellStyle={disabledCellStyle}
-                  textStyle={textStyle}
-                  placeholderStyle={placeholderStyle}
-                />
-              )}
-            </View>
-            {separators.has(cell.index) &&
-              (renderSeparator ? (
-                renderSeparator(cell.index)
-              ) : (
-                <View style={[styles.dash, { backgroundColor: palette.border }]} />
-              ))}
-          </Fragment>
-        ))}
+        {field.cells.map((cell) => {
+          const look = styleFor(cellStyle, cell);
+          return (
+            <Fragment key={cell.index}>
+              <View
+                testID={testID ? `${testID}-cell-${cell.index}` : undefined}
+                style={renderCell ? undefined : [styles.slot, slotSize(look)]}
+              >
+                {renderCell ? (
+                  renderCell(cell)
+                ) : (
+                  <DefaultCell
+                    cell={cell}
+                    palette={palette}
+                    variant={variant}
+                    caret={caret && !verifying}
+                    caretStyle={caretStyle}
+                    reduceMotion={reduceMotion}
+                    placeholder={placeholder}
+                    cellStyle={look}
+                    textStyle={styleFor(textStyle, cell)}
+                  />
+                )}
+              </View>
+              {separators.has(cell.index) &&
+                (renderSeparator ? (
+                  renderSeparator(cell.index)
+                ) : (
+                  <View style={[styles.dash, { backgroundColor: palette.border }]} />
+                ))}
+            </Fragment>
+          );
+        })}
       </Animated.View>
       <TextInput
         {...field.inputProps}

@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { buildCells, cellContent, resolveLength } from '../cells';
+import { buildCells, cellContent, resolveLength, styleFor } from '../cells';
 
 const activeEmpty = {
   index: 0,
   char: '',
   isFilled: false,
   isActive: true,
+  isDisabled: false,
   status: 'idle',
 } as const;
 
@@ -16,9 +17,22 @@ describe('cellContent', () => {
     expect(cellContent(activeEmpty, true, '•')).toBe('caret'));
 });
 
-const base = { length: 4, isFocused: true, status: 'idle', secure: false } as const;
+const base = {
+  length: 4,
+  isFocused: true,
+  status: 'idle',
+  secure: false,
+  disabled: false,
+} as const;
 
 describe('buildCells', () => {
+  it('marks every cell disabled while the field is', () =>
+    expect(buildCells('12', { ...base, disabled: true }).map((c) => c.isDisabled)).toEqual([
+      true,
+      true,
+      true,
+      true,
+    ]));
   it('marks the next empty cell active while focused', () =>
     expect(buildCells('12', base).map((c) => [c.char, c.isFilled, c.isActive])).toEqual([
       ['1', true, false],
@@ -48,4 +62,13 @@ describe('resolveLength', () => {
     expect(resolveLength(n)).toBe(6),
   );
   it('resolveLength keeps a positive integer', () => expect(resolveLength(4)).toBe(4));
+});
+
+describe('styleFor', () => {
+  it('passes a plain style through', () =>
+    expect(styleFor({ width: 64 }, activeEmpty)).toEqual({ width: 64 }));
+  it('calls a style function with the cell', () =>
+    expect(styleFor((cell) => cell.isActive && { borderColor: '#FF6F61' }, activeEmpty)).toEqual({
+      borderColor: '#FF6F61',
+    }));
 });

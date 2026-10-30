@@ -91,16 +91,10 @@ export function CodeStep(props: { verify: (code: string) => Promise<void>; resen
 | `statusMessages` | `{ verifying, error, success }` | `'Verifying code'`, `'Incorrect code'`, `'Code verified'` | What screen readers hear when the status changes. |
 | `accessibilityLabel` | `string` | `'Verification code'` | The label screen readers read for the field. |
 | `testID` | `string` | | Also names the hidden input `<testID>-input` and each cell `<testID>-cell-<index>`. |
-| `cellStyle` | `StyleProp<ViewStyle>` | | Style for every cell. Its `width` and `height` resize the cells, which are 52 wide and 56 tall by default. |
-| `focusedCellStyle` | `StyleProp<ViewStyle>` | | Added to the cell where the next character goes, while the field has focus. |
-| `filledCellStyle` | `StyleProp<ViewStyle>` | | Added to cells that hold a character. |
-| `errorCellStyle` | `StyleProp<ViewStyle>` | | Added to every cell in the error state. |
-| `successCellStyle` | `StyleProp<ViewStyle>` | | Added to every cell in the success state. |
-| `disabledCellStyle` | `StyleProp<ViewStyle>` | | Added to every cell while `disabled` is `true`. |
-| `textStyle` | `StyleProp<TextStyle>` | | Style for the characters and the placeholder. |
-| `placeholderStyle` | `StyleProp<TextStyle>` | | Added to the placeholder. |
+| `cellStyle` | `StyleProp<ViewStyle> \| (cell: Cell) => StyleProp<ViewStyle>` | | Style for every cell. A function gets each cell and returns its style, so `({ isActive }) => isActive && { borderColor: '#FF6F61' }` colors the focused cell. Its `width` and `height` resize the cells, which are 52 wide and 56 tall by default. |
+| `textStyle` | `StyleProp<TextStyle> \| (cell: Cell) => StyleProp<TextStyle>` | | Style for the characters and the placeholder. A function gets each cell, and the placeholder shows in cells where `isFilled` is `false`. |
 | `caretStyle` | `StyleProp<ViewStyle>` | | Style for the caret. |
-| `renderCell` | `(cell: Cell) => ReactNode` | | Draws each cell from `{ index, char, isFilled, isActive, status }`. `char` is a dot when `secure` is on. `variant` and the cell, text and caret styles don't apply. |
+| `renderCell` | `(cell: Cell) => ReactNode` | | Draws each cell from `{ index, char, isFilled, isActive, isDisabled, status }`. `char` is a dot when `secure` is on. `variant` and the cell, text and caret styles don't apply. |
 | `renderSeparator` | `(afterIndex: number) => ReactNode` | | Replaces the dash between groups. `afterIndex` is the index of the cell before it. |
 | `textInputProps` | `TextInputProps` | | Props for the hidden `TextInput`, applied over the field's own. `value`, `onChangeText` and the ref stay the field's. |
 
@@ -159,7 +153,7 @@ Change the import:
 `defaultValue`, `autoFocus` and the ref's `clear()` and `setValue()` keep working. A few things change:
 
 - `inputCount` is now `length`, and the default went from 4 to 6.
-- `tintColor` and `offTintColor` are now `focusedCellStyle` and `cellStyle`, which take a style such as `{ borderColor: '#FF6F61' }`.
+- `tintColor` and `offTintColor` are now a `cellStyle` function, such as `({ isActive }) => ({ borderColor: isActive ? '#FF6F61' : '#D4D4D4' })`.
 - `onTextChangeHandler` is now `onChange`, and it runs on every change with no debounce.
 - `type` replaces `useNumbersRegex`, `useCustomRegex`, `customRegex` and `keyboardType`. It takes `'numeric'`, `'alpha'`, `'alphanumeric'` or a `RegExp` for one character.
 

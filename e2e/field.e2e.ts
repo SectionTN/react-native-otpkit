@@ -1,3 +1,4 @@
+import { test as webTest } from '@e2e-dev/web';
 import { expect, test } from 'e2e';
 import {
   deleteLast,
@@ -94,6 +95,22 @@ test('sizes the built-in cells from cellStyle', { platforms: ['web'] }, async ({
     height: 64,
   });
 });
+
+webTest(
+  'styles the built-in cells from a cellStyle function',
+  { platforms: ['web'] },
+  async ({ app, screen, browser }) => {
+    await app.restart();
+    await openTab(screen, 'looks');
+    await (await input(screen, 'tint')).tap();
+    const border = (index: number) =>
+      browser.evaluate<string>(
+        `getComputedStyle(document.querySelector('[data-testid="tint-cell-${index}"] > div')).borderTopColor`,
+      );
+    expect(await border(0)).toBe('rgb(255, 111, 97)');
+    expect(await border(1)).not.toBe('rgb(255, 111, 97)');
+  },
+);
 
 test('keeps a disabled field closed', async ({ app, screen }) => {
   await app.restart();

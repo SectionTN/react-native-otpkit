@@ -1,4 +1,5 @@
-import type { Cell, OTPStatus } from '../types';
+import type { StyleProp } from 'react-native';
+import type { Cell, CellStyleProp, OTPStatus } from '../types';
 
 export const DEFAULT_LENGTH = 6;
 export const SECURE_CHAR = '•';
@@ -17,7 +18,13 @@ export function cellContent(cell: Cell, caret: boolean, placeholder?: string): C
 
 export function buildCells(
   value: string,
-  state: { length: number; isFocused: boolean; status: OTPStatus; secure: boolean },
+  state: {
+    length: number;
+    isFocused: boolean;
+    status: OTPStatus;
+    secure: boolean;
+    disabled: boolean;
+  },
 ): Cell[] {
   const active = state.isFocused ? Math.min(value.length, state.length - 1) : -1;
   return Array.from({ length: state.length }, (_, index) => {
@@ -27,7 +34,12 @@ export function buildCells(
       char: char && state.secure ? SECURE_CHAR : char,
       isFilled: char !== '',
       isActive: index === active,
+      isDisabled: state.disabled,
       status: state.status,
     };
   });
+}
+
+export function styleFor<T>(style: CellStyleProp<T> | undefined, cell: Cell): StyleProp<T> {
+  return typeof style === 'function' ? (style as (cell: Cell) => StyleProp<T>)(cell) : style;
 }

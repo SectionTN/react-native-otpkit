@@ -160,7 +160,13 @@ export function useOTPField(options: UseOTPFieldOptions = {}): OTPFieldState {
     value,
     status,
     isFocused,
-    cells: buildCells(value, { length, isFocused, status, secure: options.secure ?? false }),
+    cells: buildCells(value, {
+      length,
+      isFocused,
+      status,
+      secure: options.secure ?? false,
+      disabled,
+    }),
     inputProps: {
       ref: inputRef,
       value,
