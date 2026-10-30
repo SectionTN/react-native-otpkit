@@ -3,6 +3,10 @@
   <img alt="React Native OTPKit, a one-time code field for React Native" src="https://raw.githubusercontent.com/SectionTN/react-native-otpkit/main/.github/assets/otpkit-banner-light.png" />
 </picture>
 
+[![npm](https://img.shields.io/npm/v/react-native-otpkit?style=flat-square)](https://www.npmjs.com/package/react-native-otpkit)
+[![License](https://img.shields.io/npm/l/react-native-otpkit?style=flat-square)](https://github.com/SectionTN/react-native-otpkit/blob/main/LICENSE)
+[![Context7](https://img.shields.io/badge/Context7-docs-blue?style=flat-square)](https://context7.com/sectiontn/react-native-otpkit)
+
 A one-time code field for React Native. It draws its cells over one hidden `TextInput` and reads codes from SMS with Google Play services on Android.
 
 <picture>
