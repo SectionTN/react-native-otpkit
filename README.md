@@ -82,8 +82,7 @@ export function CodeStep(props: { verify: (code: string) => Promise<void>; resen
 | `secure` | `boolean` | `false` | Draws a dot in each filled cell. Android accessibility services can still read the code from the hidden input. |
 | `disabled` | `boolean` | `false` | Blocks focus and input. |
 | `onFocus`, `onBlur` | `() => void` | | Called when the field gains or loses focus. |
-| `sms` | `false \| 'consent' \| 'retriever'` | `false` | Reads the code from an SMS on Android. `'consent'` asks the user to share one message, and `'retriever'` reads a message that contains the app hash without asking. On the web, both use WebOTP. |
-| `smsSender` | `string` | | With `'consent'`, reads only messages from this phone number. |
+| `sms` | `false \| 'consent' \| 'retriever' \| { mode, sender? }` | `false` | Reads the code from an SMS on Android. `'consent'` asks the user to share one message, and `'retriever'` reads a message that contains the app hash without asking. Pass `{ mode: 'consent', sender }` to read only messages from the phone number `sender`. On the web, both modes use WebOTP. |
 | `autoFocus` | `boolean` | `true` | Focuses the field on mount. |
 | `placeholder` | `string` | | One character to show in each empty cell. |
 | `groups` | `number[]` | | Cell counts per group, such as `[3, 3]`. A dash shows between groups. |

@@ -132,9 +132,7 @@ export interface OTPFieldProps
   caret?: boolean;
   caretStyle?: StyleProp<ViewStyle>;
   /** Read the code from an SMS on Android (WebOTP on web). Off by default. */
-  sms?: false | SmsMode;
-  /** Consent mode only: the phone number the message must come from. */
-  smsSender?: string;
+  sms?: false | SmsMode | SmsOptions;
   statusMessages?: StatusMessages;
   /** One character shown in each empty cell. */
   placeholder?: string;
@@ -177,15 +175,17 @@ export const SmsStatus = {
 } as const;
 export type SmsStatus = ValueOf<typeof SmsStatus>;
 
-export interface UseSmsCodeOptions {
-  /** `'consent'` asks the user to share one message; `'retriever'` needs the app hash in it. */
+export interface SmsOptions {
   mode: SmsMode;
+  /** Consent mode only: the phone number the message must come from. */
+  sender?: string;
+}
+
+export interface UseSmsCodeOptions extends SmsOptions {
   /** Code length for the default extraction. Default 6. */
   length?: number;
   /** Code characters for the default extraction. Default `'numeric'`. */
   type?: CodeType;
-  /** Consent mode only: the phone number the message must come from. */
-  sender?: string;
   /** Replaces the default extraction of the code from the message. Web skips it: WebOTP hands over the code. */
   extract?: (message: string) => string | null;
   /** Listen on mount. Default true. */

@@ -13,6 +13,7 @@ import {
 import { resolveLength } from './core/cells';
 import { separatorsAfter } from './core/groups';
 import { DefaultCell } from './DefaultCell';
+import { resolveSms } from './sms/resolveSms';
 import { useSmsCode } from './sms/useSmsCode';
 import { HIDDEN_INPUT_OPACITY, metrics, palettes } from './theme';
 import type { OTPFieldProps } from './types';
@@ -51,8 +52,7 @@ export function OTPField(props: OTPFieldProps) {
     onBlur,
     placeholder,
     groups,
-    sms: smsMode,
-    smsSender,
+    sms: smsProp,
     caret = true,
     caretStyle,
     statusMessages,
@@ -101,13 +101,14 @@ export function OTPField(props: OTPFieldProps) {
   const message = useStatusAnnouncement(field.status, statusMessages);
   const verifying = field.status === 'verifying';
   const { focus, blur, clear, setValue } = field;
-  const listening = Boolean(smsMode) && !disabled;
+  const smsOptions = resolveSms(smsProp);
+  const listening = smsOptions !== null && !disabled;
   const sms = useSmsCode({
-    mode: smsMode || 'consent',
+    mode: smsOptions?.mode ?? 'consent',
     enabled: listening,
     length,
     type,
-    sender: smsSender,
+    sender: smsOptions?.sender,
   });
   const listenAgain = sms.start;
   useSmsFill(sms.code, field.status, setValue);

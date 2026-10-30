@@ -1,5 +1,5 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
-import { CodeType, OTPStatus, SmsMode, SmsStatus, Variant } from '../types';
+import { CodeType, type OTPFieldProps, OTPStatus, SmsMode, SmsStatus, Variant } from '../types';
 
 describe('option constants', () => {
   it('hold the strings the props take', () => {
@@ -30,5 +30,14 @@ describe('option constants', () => {
     expectTypeOf<SmsStatus>().toEqualTypeOf<
       'idle' | 'listening' | 'received' | 'timeout' | 'denied' | 'unavailable'
     >();
+  });
+});
+
+describe('OTPFieldProps', () => {
+  it('takes the SMS sender inside the sms prop', () => {
+    const props: OTPFieldProps = { sms: { mode: SmsMode.Consent, sender: '5551234' } };
+    // @ts-expect-error the sender moved into sms
+    const old: OTPFieldProps = { smsSender: '5551234' };
+    expect([props, old]).toHaveLength(2);
   });
 });

@@ -7,6 +7,7 @@ export type {
   OTPFieldRef,
   OTPFieldState,
   SmsCodeState,
+  SmsOptions,
   UseOTPFieldOptions,
   UseSmsCodeOptions,
 } from './types';
