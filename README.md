@@ -17,13 +17,18 @@ A one-time code field for React Native. It draws its cells over one hidden `Text
 ## Features
 
 - Paste and autofill that find the code in `123-456` or in a whole message
-- SMS reading with no permissions: the User Consent or Retriever API on Android, WebOTP on the web
+- [SMS reading](https://github.com/SectionTN/react-native-otpkit/blob/main/guides/sms.md) with no permissions: the User Consent or Retriever API on Android, [WebOTP](https://github.com/SectionTN/react-native-otpkit/blob/main/guides/web.md) on the web
 - Verifying, success and error states from the promise `onComplete` returns
 - A resend timer that keeps counting while the app is in the background
-- Box and underline looks for light and dark color schemes, custom cells and a headless hook
+- [Box and underline looks](https://github.com/SectionTN/react-native-otpkit/blob/main/guides/styling.md) for light and dark color schemes, custom cells and a headless hook
 - One labeled input for screen readers, with spoken status changes
 
 <img alt="Box, underline, groups of three and round custom cells in the light color scheme, then secure, placeholder, letters and digits and a coral active cell from a style function in the dark color scheme" src="https://raw.githubusercontent.com/SectionTN/react-native-otpkit/main/.github/assets/otpkit-looks.png" />
+
+<!-- vale SectionTN.Exclamation = NO -->
+> [!NOTE]
+> Read the guides to [style the cells](https://github.com/SectionTN/react-native-otpkit/blob/main/guides/styling.md), [read codes from SMS](https://github.com/SectionTN/react-native-otpkit/blob/main/guides/sms.md) and [use it on the web](https://github.com/SectionTN/react-native-otpkit/blob/main/guides/web.md).
+<!-- vale SectionTN.Exclamation = YES -->
 
 ## Installation
 
