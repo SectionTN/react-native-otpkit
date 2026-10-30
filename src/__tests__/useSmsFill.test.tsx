@@ -39,6 +39,13 @@ describe('useSmsFill', () => {
     expect(setValue).not.toHaveBeenCalled();
   });
 
+  it('drops a code that arrived during a check once a clear ends the check', () => {
+    const { rerender, setValue } = setup({ code: null, status: 'verifying' });
+    rerender({ code: '654321', status: 'verifying' });
+    rerender({ code: '654321', status: 'idle' });
+    expect(setValue).not.toHaveBeenCalled();
+  });
+
   it('fills the same code again after a new listen', () => {
     const { rerender, setValue } = setup({ code: '123456', status: 'idle' });
     rerender({ code: null, status: 'idle' });

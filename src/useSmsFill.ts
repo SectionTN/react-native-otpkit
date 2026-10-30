@@ -8,6 +8,7 @@ export function useSmsFill(
   setValue: (text: string) => void,
 ): void {
   const pending = useRef<string | null>(null);
+  const checking = useRef(false);
   const verifying = status === 'verifying';
 
   useEffect(() => {
@@ -16,8 +17,10 @@ export function useSmsFill(
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: a new code or a settled check fills
   useEffect(() => {
+    const ended = checking.current && !verifying;
+    checking.current = verifying;
     if (verifying || pending.current === null) return;
-    if (status !== 'success') setValue(pending.current);
+    if (!ended || status === 'error') setValue(pending.current);
     pending.current = null;
   }, [code, verifying, status, setValue]);
 }
