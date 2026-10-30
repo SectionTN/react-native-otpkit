@@ -7,7 +7,7 @@ A one-time code field for React Native. It draws its cells over one hidden `Text
 
 <picture>
   <source type="image/webp" srcset="https://raw.githubusercontent.com/SectionTN/react-native-otpkit/main/.github/assets/otpkit-showcase.webp" />
-  <img alt="The example app on iOS and Android side by side: a wrong code turns the cells red with Incorrect code and clears them, then the right code turns them green with Signed in, while the resend countdown runs" src="https://raw.githubusercontent.com/SectionTN/react-native-otpkit/main/.github/assets/otpkit-showcase.gif" />
+  <img alt="The example app on iOS, Android and the web side by side: a wrong code turns the cells red with Incorrect code and clears them, then the right code turns them green with Signed in, while the resend countdown runs" src="https://raw.githubusercontent.com/SectionTN/react-native-otpkit/main/.github/assets/otpkit-showcase.gif" />
 </picture>
 
 ## Features
@@ -18,6 +18,8 @@ A one-time code field for React Native. It draws its cells over one hidden `Text
 - A resend timer that keeps counting while the app is in the background
 - Box and underline looks for light and dark color schemes, custom cells and a headless hook
 - One labeled input for screen readers, with spoken status changes
+
+<img alt="Box, underline, groups of three and round custom cells in the light color scheme, then secure, placeholder, letters and digits and a coral active cell from a style function in the dark color scheme" src="https://raw.githubusercontent.com/SectionTN/react-native-otpkit/main/.github/assets/otpkit-looks.png" />
 
 ## Installation
 
