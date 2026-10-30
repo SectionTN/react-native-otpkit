@@ -1,15 +1,25 @@
 import { execFileSync } from 'node:child_process';
-import { beforeEach } from '@e2e-dev/mobile';
+import { afterAll, beforeEach } from '@e2e-dev/mobile';
 import type { Locator, Screen } from 'e2e';
 
 let installed = false;
+let headsUpOff = false;
 
-// Installs the build named by OTPKIT_APP_PATH once per run on device targets. Without it, the app must already be on the device.
+// Installs the build named by OTPKIT_APP_PATH once per run on device targets, and keeps heads-up notifications off on Android.
 export function installBuildOnce(): void {
   beforeEach(async (fixtures) => {
+    if (fixtures.platform === 'android' && !headsUpOff) {
+      setHeadsUp(false);
+      headsUpOff = true;
+    }
     if (fixtures.platform === 'web' || installed || !process.env.OTPKIT_APP_PATH) return;
     await fixtures.device.installApp();
     installed = true;
+  });
+  afterAll(() => {
+    if (!headsUpOff) return;
+    setHeadsUp(true);
+    headsUpOff = false;
   });
 }
 
@@ -40,8 +50,8 @@ function adb(...args: string[]): void {
   execFileSync('adb', serial ? ['-s', serial, ...args] : args);
 }
 
-// Heads-up SMS notifications cover the tab bar, so the SMS tests turn them off while they run.
-export function setHeadsUp(enabled: boolean): void {
+// A heads-up SMS notification covers the tab bar and its reply box takes the typed digits.
+function setHeadsUp(enabled: boolean): void {
   adb('shell', 'settings', 'put', 'global', 'heads_up_notifications_enabled', enabled ? '1' : '0');
 }
 
