@@ -32,7 +32,7 @@ Installing the package and rebuilding are local and safe to run without asking. 
 ```tsx
 import { useRef } from 'react';
 import { Button, View } from 'react-native';
-import { OTPField, type OTPFieldRef, useResendTimer } from 'react-native-otpkit';
+import { OTPField, type OTPFieldRef, SmsMode, useResendTimer } from 'react-native-otpkit';
 
 export function CodeStep(props: { verify: (code: string) => Promise<void>; resend: () => void }) {
   const field = useRef<OTPFieldRef>(null);
@@ -40,7 +40,7 @@ export function CodeStep(props: { verify: (code: string) => Promise<void>; resen
 
   return (
     <View style={{ gap: 16, padding: 24 }}>
-      <OTPField ref={field} sms="consent" onComplete={props.verify} />
+      <OTPField ref={field} sms={SmsMode.Consent} onComplete={props.verify} />
       <Button
         title={timer.canResend ? 'Resend code' : `Resend in ${timer.remaining}s`}
         disabled={!timer.canResend}
@@ -59,6 +59,7 @@ export function CodeStep(props: { verify: (code: string) => Promise<void>; resen
 
 ## How the API behaves
 
+- **Constants or strings.** `CodeType`, `SmsMode`, `Variant`, `OTPStatus` and `SmsStatus` are objects of constants, each value its key in lowercase, so `SmsMode.Consent` and `'consent'` are interchangeable in props and comparisons. Each name is also the type.
 - **Controlled or uncontrolled.** Pass `value` and `onChange` for a controlled field, or `defaultValue` or nothing for an uncontrolled one. `onChange` fires on every change and is never debounced. Either way the value is sanitized: characters `type` rejects are dropped, and the code is cut to `length` (default 6). The ref has no getter, so read the code from `onChange` or `onComplete`.
 - **`onComplete` promises drive verifying.** `onComplete` runs each time a new complete code appears, from typing, paste, autofill, SMS, `setValue` or a controlled `value`, including one that replaces a complete code. It does not run for a code that is already complete on mount. Return the promise of the server call. While it is pending, the status is `'verifying'` and input is ignored. A resolve shows `'success'`, blurs and keeps the code. A reject shows `'error'`, shakes the cells and clears them after 600 ms with the caret back in the first cell, unless `clearOnError={false}`. Reject for a wrong code (an `async` function can throw), and the resolved value is ignored. A plain return leaves the status `'idle'`, and `blurOnComplete` then blurs.
 - **`status` takes over.** A `status` prop overrides the internal status. The field then only styles itself and never clears on its own. Use it when the app keeps the verification state elsewhere, such as in a store or a form library.

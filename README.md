@@ -38,7 +38,7 @@ Requirements:
 ```tsx
 import { useRef } from 'react';
 import { Button, View } from 'react-native';
-import { OTPField, type OTPFieldRef, useResendTimer } from 'react-native-otpkit';
+import { OTPField, type OTPFieldRef, SmsMode, useResendTimer } from 'react-native-otpkit';
 
 export function CodeStep(props: { verify: (code: string) => Promise<void>; resend: () => void }) {
   const field = useRef<OTPFieldRef>(null);
@@ -46,7 +46,7 @@ export function CodeStep(props: { verify: (code: string) => Promise<void>; resen
 
   return (
     <View style={{ gap: 16, padding: 24 }}>
-      <OTPField ref={field} sms="consent" onComplete={props.verify} />
+      <OTPField ref={field} sms={SmsMode.Consent} onComplete={props.verify} />
       <Button
         title={timer.canResend ? 'Resend code' : `Resend in ${timer.remaining}s`}
         disabled={!timer.canResend}
@@ -135,6 +135,18 @@ The `status` from `useSmsCode` is one of:
 | `timeout` | No message arrived within five minutes. |
 | `denied` | The user declined the consent sheet, or the browser refused WebOTP. |
 | `unavailable` | SMS can't be read here: iOS, Expo Go, a browser without WebOTP or Android without Google Play services. |
+
+### Constants
+
+Each option type is also an object of constants with the same name. The value of each constant is its key in lowercase, so `SmsMode.Consent` and `'consent'` both work.
+
+| Constant | Keys |
+| --- | --- |
+| `CodeType` | `Numeric`, `Alpha`, `Alphanumeric` |
+| `SmsMode` | `Consent`, `Retriever` |
+| `Variant` | `Box`, `Underline` |
+| `OTPStatus` | `Idle`, `Verifying`, `Error`, `Success` |
+| `SmsStatus` | `Idle`, `Listening`, `Received`, `Timeout`, `Denied`, `Unavailable` |
 
 ## Migrating from @sectiontn/otp-input
 

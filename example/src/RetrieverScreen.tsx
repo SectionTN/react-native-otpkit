@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
-import { getAppHash, OTPField } from 'react-native-otpkit';
+import { getAppHash, OTPField, SmsMode } from 'react-native-otpkit';
 import { useTheme } from './theme';
 
 export function RetrieverScreen() {
@@ -33,7 +33,12 @@ export function RetrieverScreen() {
       <Text testID="app-hash" selectable style={[styles.hash, { color: theme.text }]}>
         {hash === undefined ? '' : (hash ?? 'unavailable')}
       </Text>
-      <OTPField testID="retriever-field" sms="retriever" autoFocus={false} onChange={setValue} />
+      <OTPField
+        testID="retriever-field"
+        sms={SmsMode.Retriever}
+        autoFocus={false}
+        onChange={setValue}
+      />
       <Text testID="retriever-value" style={[styles.hint, { color: theme.secondaryText }]}>
         {`retriever: ${value}`}
       </Text>

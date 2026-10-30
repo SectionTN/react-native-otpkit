@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
-import { OTPField, type OTPFieldRef, useResendTimer } from 'react-native-otpkit';
+import { OTPField, type OTPFieldRef, SmsMode, useResendTimer } from 'react-native-otpkit';
 import { verifyCode } from './fakeServer';
 import { type Theme, useTheme } from './theme';
 
@@ -75,7 +75,7 @@ function CodeStep(props: { phone: string; theme: Theme; onChangeNumber: () => vo
       <Text style={[styles.hint, { color: theme.secondaryText }]}>
         {`Sent to ${phone || 'your phone'}. The code is 123456.`}
       </Text>
-      <OTPField ref={field} testID="sign-in-field" sms="consent" onComplete={onComplete} />
+      <OTPField ref={field} testID="sign-in-field" sms={SmsMode.Consent} onComplete={onComplete} />
       <Text testID="sign-in-status" style={[styles.status, { color: theme.secondaryText }]}>
         {message}
       </Text>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
-import { type Cell, OTPField, type OTPFieldProps } from 'react-native-otpkit';
+import { type Cell, CodeType, OTPField, type OTPFieldProps, Variant } from 'react-native-otpkit';
 import { type Theme, useTheme } from './theme';
 
 interface Look {
@@ -17,11 +17,11 @@ export function LooksScreen() {
 
   const looks: Look[] = [
     { id: 'box', label: 'Box', props: { autoFocus: true } },
-    { id: 'underline', label: 'Underline', props: { variant: 'underline' } },
+    { id: 'underline', label: 'Underline', props: { variant: Variant.Underline } },
     { id: 'groups', label: 'Groups of three', props: { groups: [3, 3] } },
     { id: 'secure', label: 'Secure', props: { secure: true } },
     { id: 'placeholder', label: 'Placeholder', props: { placeholder: '•' } },
-    { id: 'alphanumeric', label: 'Letters and digits', props: { type: 'alphanumeric' } },
+    { id: 'alphanumeric', label: 'Letters and digits', props: { type: CodeType.Alphanumeric } },
     { id: 'disabled', label: 'Disabled', props: { disabled: true, defaultValue: '12' } },
     { id: 'rtl', label: 'Inside a right-to-left view', rtl: true },
     {

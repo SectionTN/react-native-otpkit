@@ -8,10 +8,28 @@ import type {
   ViewStyle,
 } from 'react-native';
 
-/** `'numeric'`, `'alpha'` (ASCII letters), `'alphanumeric'`, or a RegExp tested on each character. */
-export type CodeType = 'numeric' | 'alpha' | 'alphanumeric' | RegExp;
+type ValueOf<T> = T[keyof T];
 
-export type OTPStatus = 'idle' | 'verifying' | 'error' | 'success';
+/** The characters the field accepts. `Alpha` means ASCII letters. */
+export const CodeType = {
+  Numeric: 'numeric',
+  Alpha: 'alpha',
+  Alphanumeric: 'alphanumeric',
+} as const;
+/** A `CodeType` or its string, or a RegExp tested on each character. */
+export type CodeType = ValueOf<typeof CodeType> | RegExp;
+
+export const OTPStatus = {
+  Idle: 'idle',
+  Verifying: 'verifying',
+  Error: 'error',
+  Success: 'success',
+} as const;
+export type OTPStatus = ValueOf<typeof OTPStatus>;
+
+/** The look of the built-in cells. */
+export const Variant = { Box: 'box', Underline: 'underline' } as const;
+export type Variant = ValueOf<typeof Variant>;
 
 export interface Cell {
   index: number;
@@ -125,7 +143,7 @@ export interface OTPFieldProps
   /** Focus on mount. Default true. */
   autoFocus?: boolean;
   /** Default `'box'`. */
-  variant?: 'box' | 'underline';
+  variant?: Variant;
   cellStyle?: StyleProp<ViewStyle>;
   focusedCellStyle?: StyleProp<ViewStyle>;
   filledCellStyle?: StyleProp<ViewStyle>;
@@ -145,9 +163,19 @@ export interface OTPFieldProps
   ref?: Ref<OTPFieldRef>;
 }
 
-export type SmsMode = 'consent' | 'retriever';
+/** `Consent` asks the user to share one message; `Retriever` needs the app hash in it. */
+export const SmsMode = { Consent: 'consent', Retriever: 'retriever' } as const;
+export type SmsMode = ValueOf<typeof SmsMode>;
 
-export type SmsStatus = 'idle' | 'listening' | 'received' | 'timeout' | 'denied' | 'unavailable';
+export const SmsStatus = {
+  Idle: 'idle',
+  Listening: 'listening',
+  Received: 'received',
+  Timeout: 'timeout',
+  Denied: 'denied',
+  Unavailable: 'unavailable',
+} as const;
+export type SmsStatus = ValueOf<typeof SmsStatus>;
 
 export interface UseSmsCodeOptions {
   /** `'consent'` asks the user to share one message; `'retriever'` needs the app hash in it. */

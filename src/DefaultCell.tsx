@@ -9,12 +9,12 @@ import {
 import { Caret } from './Caret';
 import { cellContent } from './core/cells';
 import { metrics, type Palette } from './theme';
-import type { Cell } from './types';
+import type { Cell, Variant } from './types';
 
 export interface DefaultCellProps {
   cell: Cell;
   palette: Palette;
-  variant: 'box' | 'underline';
+  variant: Variant;
   disabled: boolean;
   caret: boolean;
   reduceMotion: boolean;
