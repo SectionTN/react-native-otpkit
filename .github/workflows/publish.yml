@@ -35,4 +35,9 @@ jobs:
         run: npm install -g npm@11.19.1
 
       - name: Stage with provenance
-        run: npm stage publish --provenance --access public
+        run: |
+          case "$GITHUB_REF_NAME" in
+            *-*) tag=next ;;
+            *) tag=latest ;;
+          esac
+          npm stage publish --provenance --access public --tag "$tag"
