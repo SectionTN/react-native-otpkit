@@ -34,6 +34,11 @@ export function LooksScreen() {
       label: 'Animated cells',
       props: { renderCell: (cell) => <PopCell cell={cell} theme={theme} /> },
     },
+    {
+      id: 'large',
+      label: 'Larger cells',
+      props: { length: 4, cellStyle: { width: 64, height: 64 } },
+    },
   ];
 
   return (

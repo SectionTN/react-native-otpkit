@@ -92,7 +92,7 @@ export function CodeStep(props: { verify: (code: string) => Promise<void>; resen
 | `statusMessages` | `{ verifying, error, success }` | `'Verifying code'`, `'Incorrect code'`, `'Code verified'` | What screen readers hear when the status changes. |
 | `accessibilityLabel` | `string` | `'Verification code'` | The label screen readers read for the field. |
 | `testID` | `string` | | Also names the hidden input `<testID>-input` and each cell `<testID>-cell-<index>`. |
-| `cellStyle` | `StyleProp<ViewStyle>` | | Style for every cell. |
+| `cellStyle` | `StyleProp<ViewStyle>` | | Style for every cell. Its `width` and `height` resize the cells, which are 52 wide and 56 tall by default. |
 | `focusedCellStyle` | `StyleProp<ViewStyle>` | | Added to the cell where the next character goes, while the field has focus. |
 | `filledCellStyle` | `StyleProp<ViewStyle>` | | Added to cells that hold a character. |
 | `errorCellStyle` | `StyleProp<ViewStyle>` | | Added to every cell in the error state. |

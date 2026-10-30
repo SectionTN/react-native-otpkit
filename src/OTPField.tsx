@@ -2,11 +2,13 @@ import { Fragment, useEffect, useImperativeHandle } from 'react';
 import {
   Animated,
   Platform,
+  type StyleProp,
   StyleSheet,
   Text,
   TextInput,
   useColorScheme,
   View,
+  type ViewStyle,
 } from 'react-native';
 import { resolveLength } from './core/cells';
 import { separatorsAfter } from './core/groups';
@@ -19,6 +21,16 @@ import { usePropWarnings } from './usePropWarnings';
 import { useReduceMotion } from './useReduceMotion';
 import { useShake } from './useShake';
 import { useStatusAnnouncement } from './useStatusAnnouncement';
+
+const SIZE_KEYS = ['width', 'height', 'minWidth', 'maxWidth', 'minHeight', 'maxHeight'] as const;
+
+// The size props of cellStyle size the slot that a built-in cell fills.
+function slotSize(cellStyle: StyleProp<ViewStyle>): ViewStyle {
+  const flat = StyleSheet.flatten(cellStyle) ?? {};
+  return Object.fromEntries(
+    SIZE_KEYS.filter((key) => flat[key] !== undefined).map((key) => [key, flat[key]]),
+  );
+}
 
 export function OTPField(props: OTPFieldProps) {
   const {
@@ -131,6 +143,7 @@ export function OTPField(props: OTPFieldProps) {
   const spoken = secure
     ? `${field.value.length} of ${length} entered`
     : field.value.split('').join(' ');
+  const slot = renderCell ? undefined : [styles.slot, slotSize(cellStyle)];
 
   return (
     <View {...viewProps} testID={testID} style={[styles.root, style]}>
@@ -141,10 +154,7 @@ export function OTPField(props: OTPFieldProps) {
       >
         {field.cells.map((cell) => (
           <Fragment key={cell.index}>
-            <View
-              testID={testID ? `${testID}-cell-${cell.index}` : undefined}
-              style={renderCell ? undefined : styles.slot}
-            >
+            <View testID={testID ? `${testID}-cell-${cell.index}` : undefined} style={slot}>
               {renderCell ? (
                 renderCell(cell)
               ) : (
@@ -213,7 +223,7 @@ const styles = StyleSheet.create({
     gap: metrics.gap,
     pointerEvents: 'none',
   },
-  slot: { flex: 1, maxWidth: metrics.maxWidth, height: metrics.height },
+  slot: { flexShrink: 1, width: metrics.width, height: metrics.height },
   dash: { width: metrics.dashWidth, height: metrics.dashHeight },
   input: {
     opacity: HIDDEN_INPUT_OPACITY,

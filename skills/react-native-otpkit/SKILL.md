@@ -77,7 +77,7 @@ export function CodeStep(props: { verify: (code: string) => Promise<void>; resen
 
 - **One SMS listen at a time.** A second `OTPField` with `sms`, or a `useSmsCode`, cancels the first listen. Keep one listener per screen.
 - **A custom hidden input needs an opacity of 0.011.** With `useOTPField`, lay the `TextInput` over the cells with `StyleSheet.absoluteFill`, `opacity: 0.011` and `color: 'transparent'`. iOS skips hit-testing below an opacity of 0.01, so `opacity: 0` makes the field untappable. Put `pointerEvents: 'none'` on the cell row, hide the cells from screen readers and label the input.
-- **Built-in cells have a fixed slot.** Each is in a slot 56 tall and up to 52 wide, 8 apart, and `cellStyle` styles the cell inside it. For other sizes, use `renderCell`, whose cells size themselves.
+- **Size built-in cells with `cellStyle`.** Its `width`, `height` and min and max sizes resize the cells, which are 52 wide and 56 tall by default, 8 apart, and shrink to fit a narrow row.
 - **Style props only apply to the built-in cells.** With `renderCell`, `variant`, the cell styles, `textStyle`, `placeholder` and `caretStyle` are ignored. Draw focus, error and success from `cell.isActive` and `cell.status`. `cell.char` is a dot when `secure` is on.
 - **`textInputProps` cannot replace** `value`, `onChangeText`, the ref, `testID` or `accessibilityLabel`. Its `onFocus` and `onBlur` run next to the field's. Pass `testID` and `accessibilityLabel` on `OTPField`, and the input gets `<testID>-input` and each cell `<testID>-cell-<index>`.
 - **`secure` masks the cells, not the input.** The hidden input is not a password field, so autofill keeps working, and Android accessibility services can still read the code.

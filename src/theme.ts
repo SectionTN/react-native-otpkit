@@ -27,7 +27,7 @@ export type Palette = { [K in keyof typeof palettes.light]: string };
 
 export const metrics = {
   height: 56,
-  maxWidth: 52,
+  width: 52,
   gap: 8,
   radius: 12,
   borderWidth: 1.5,

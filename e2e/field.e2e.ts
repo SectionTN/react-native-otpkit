@@ -70,6 +70,17 @@ test('masks a secure code', { platforms: ['web'] }, async ({ app, screen }) => {
   await expect(screen.getByTestId('secure-cell-0')).toHaveText('•');
 });
 
+// Cells are hidden from the accessibility tree, so only the web engine can measure one.
+test('sizes the built-in cells from cellStyle', { platforms: ['web'] }, async ({ app, screen }) => {
+  await app.restart();
+  await openTab(screen, 'looks');
+  await input(screen, 'large');
+  expect(await screen.getByTestId('large-cell-0').boundingBox()).toMatchObject({
+    width: 64,
+    height: 64,
+  });
+});
+
 test('keeps a disabled field closed', async ({ app, screen }) => {
   await app.restart();
   await openTab(screen, 'looks');
