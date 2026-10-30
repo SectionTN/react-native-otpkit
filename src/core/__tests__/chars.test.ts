@@ -13,4 +13,6 @@ describe('filterText', () => {
   it('answers the same for every character of a sticky RegExp', () =>
     expect(filterText('1111', /\d/y)).toBe('1111'));
   it('drops emoji without splitting them', () => expect(filterText('1😀2', 'numeric')).toBe('12'));
+  it('drops an astral character that a custom RegExp matches', () =>
+    expect(filterText('1😀2', /./u)).toBe('12'));
 });

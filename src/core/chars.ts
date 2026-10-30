@@ -19,6 +19,8 @@ function statelessCopy(pattern: RegExp): RegExp {
 }
 
 export function isAllowed(char: string, type: CodeType): boolean {
+  // A code character is one UTF-16 unit, so slicing a value never splits one.
+  if (char.length !== 1) return false;
   const pattern = typeof type === 'string' ? PATTERNS[type] : statelessCopy(type);
   return pattern.test(char);
 }
