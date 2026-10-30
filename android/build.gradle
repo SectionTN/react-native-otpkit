@@ -38,5 +38,6 @@ dependencies {
   implementation "com.facebook.react:react-android"
   // 18.3.1 carries Kotlin 2.3 metadata, which the Kotlin 2.1 of React Native 0.86 cannot read.
   implementation "com.google.android.gms:play-services-auth-api-phone:18.3.0"
+  implementation "com.google.android.gms:play-services-auth:22.0.0"
   testImplementation "junit:junit:4.13.2"
 }

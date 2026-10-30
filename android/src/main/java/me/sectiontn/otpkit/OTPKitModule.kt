@@ -15,6 +15,8 @@ import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UiThreadUtil
+import com.google.android.gms.auth.api.identity.GetPhoneNumberHintIntentRequest
+import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -35,6 +37,8 @@ class OTPKitModule(reactContext: ReactApplicationContext) :
   // The session that opened the consent sheet, so a stale sheet never answers a newer one.
   private var consentOwner: Session? = null
   private var resumed = false
+  // The pending phone number hint; a new request settles the old one with null.
+  private var hint: Promise? = null
 
   init {
     reactContext.addActivityEventListener(this)
@@ -69,8 +73,15 @@ class OTPKitModule(reactContext: ReactApplicationContext) :
     }
   }
 
+  override fun requestPhoneNumberHint(promise: Promise) {
+    UiThreadUtil.runOnUiThread { requestHintOnMainThread(promise) }
+  }
+
   override fun invalidate() {
-    UiThreadUtil.runOnUiThread { cancel() }
+    UiThreadUtil.runOnUiThread {
+      cancel()
+      settleHint(hint, null)
+    }
     reactApplicationContext.removeActivityEventListener(this)
     reactApplicationContext.removeLifecycleEventListener(this)
     super.invalidate()
@@ -149,7 +160,57 @@ class OTPKitModule(reactContext: ReactApplicationContext) :
     }
   }
 
+  private fun requestHintOnMainThread(promise: Promise) {
+    val activity = reactApplicationContext.currentActivity
+    if (activity == null) {
+      promise.reject(E_UNAVAILABLE, "There is no activity to show the phone number hint")
+      return
+    }
+    settleHint(hint, null)
+    hint = promise
+    Identity.getSignInClient(activity)
+      .getPhoneNumberHintIntent(GetPhoneNumberHintIntentRequest.builder().build())
+      .addOnSuccessListener { pending ->
+        if (hint !== promise) return@addOnSuccessListener
+        try {
+          activity.startIntentSenderForResult(pending.intentSender, HINT_REQUEST, null, 0, 0, 0)
+        } catch (e: Exception) {
+          hint = null
+          promise.reject(E_NATIVE, e.message, e)
+        }
+      }
+      .addOnFailureListener { error ->
+        if (hint !== promise) return@addOnFailureListener
+        hint = null
+        promise.reject(E_UNAVAILABLE, error.message, error)
+      }
+  }
+
+  private fun onHintResult(activity: Activity, resultCode: Int, data: Intent?) {
+    val target = hint ?: return
+    hint = null
+    if (resultCode != Activity.RESULT_OK) {
+      target.resolve(null)
+      return
+    }
+    try {
+      target.resolve(Identity.getSignInClient(activity).getPhoneNumberFromIntent(data))
+    } catch (e: Exception) {
+      target.reject(E_NATIVE, e.message, e)
+    }
+  }
+
+  private fun settleHint(target: Promise?, number: String?) {
+    if (target == null || hint !== target) return
+    hint = null
+    target.resolve(number)
+  }
+
   override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
+    if (requestCode == HINT_REQUEST) {
+      onHintResult(activity, resultCode, data)
+      return
+    }
     if (requestCode != CONSENT_REQUEST) return
     val target = consentOwner ?: return
     consentOwner = null
@@ -207,6 +268,7 @@ class OTPKitModule(reactContext: ReactApplicationContext) :
   companion object {
     const val NAME = "OTPKit"
     private const val CONSENT_REQUEST = 0x4f54
+    private const val HINT_REQUEST = 0x4f55
     private const val PLAY_SERVICES = "com.google.android.gms"
     private const val E_CANCELLED = "E_CANCELLED"
     private const val E_UNAVAILABLE = "E_UNAVAILABLE"

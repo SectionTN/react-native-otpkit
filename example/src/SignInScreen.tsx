@@ -1,7 +1,13 @@
 import { useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
-import { OTPField, type OTPFieldRef, SmsMode, useResendTimer } from 'react-native-otpkit';
+import {
+  OTPField,
+  type OTPFieldRef,
+  requestPhoneNumberHint,
+  SmsMode,
+  useResendTimer,
+} from 'react-native-otpkit';
 import { verifyCode } from './fakeServer';
 import { type Theme, useTheme } from './theme';
 
@@ -9,6 +15,14 @@ export function SignInScreen() {
   const theme = useTheme();
   const [phone, setPhone] = useState('');
   const [step, setStep] = useState<'phone' | 'code'>('phone');
+  const hinted = useRef(false);
+
+  // Offers the numbers on the device the first time the empty field takes focus.
+  const onPhoneFocus = () => {
+    if (hinted.current || phone) return;
+    hinted.current = true;
+    requestPhoneNumberHint().then((number) => number && setPhone(number));
+  };
 
   return (
     <KeyboardAwareScrollView
@@ -26,6 +40,7 @@ export function SignInScreen() {
             testID="phone"
             value={phone}
             onChangeText={setPhone}
+            onFocus={onPhoneFocus}
             placeholder="Phone number"
             placeholderTextColor={theme.secondaryText}
             keyboardType="phone-pad"

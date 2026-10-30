@@ -1,4 +1,5 @@
 export { OTPField } from './OTPField';
+export { requestPhoneNumberHint } from './phone/requestPhoneNumberHint';
 export { getAppHash } from './sms/getAppHash';
 export { useSmsCode } from './sms/useSmsCode';
 export type {

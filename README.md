@@ -27,7 +27,7 @@ A one-time code field for React Native. It draws its cells over one hidden `Text
 
 <!-- vale SectionTN.Exclamation = NO -->
 > [!NOTE]
-> Read the guides to [style the cells](https://github.com/SectionTN/react-native-otpkit/blob/main/guides/styling.md), [read codes from SMS](https://github.com/SectionTN/react-native-otpkit/blob/main/guides/sms.md) and [use it on the web](https://github.com/SectionTN/react-native-otpkit/blob/main/guides/web.md).
+> Read the guides to [style the cells](https://github.com/SectionTN/react-native-otpkit/blob/main/guides/styling.md), [read codes from SMS](https://github.com/SectionTN/react-native-otpkit/blob/main/guides/sms.md), [fill the phone number](https://github.com/SectionTN/react-native-otpkit/blob/main/guides/phone.md) and [use it on the web](https://github.com/SectionTN/react-native-otpkit/blob/main/guides/web.md).
 <!-- vale SectionTN.Exclamation = YES -->
 
 ## Installation
@@ -131,6 +131,7 @@ export function CodeStep(props: { verify: (code: string) => Promise<void>; resen
 | `useSmsCode({ mode, length, type, sender, extract, enabled })` | Listens for an SMS without a field and returns `{ code, message, status, start, stop }`. `extract(message)` replaces the default code search, except on the web, where the browser hands over the code. With `enabled: false`, it waits for `start()`. |
 | `useResendTimer(seconds, { autoStart })` | Counts down for a resend button and returns `{ remaining, canResend, restart }`. It starts on mount unless `autoStart` is `false`. Time in the background counts. |
 | `getAppHash()` | Resolves to the 11-character hash a Retriever message must contain, or to `null` off Android. The hash comes from the signing key, so debug and release builds have different ones. |
+| `requestPhoneNumberHint()` | Opens Google's phone number sheet on Android and resolves to the picked number in E.164, such as `+15551234567`. It resolves to `null` when the user closes the sheet, and off Android. |
 
 ### Listening statuses
 
@@ -184,7 +185,7 @@ npx skills add SectionTN/react-native-otpkit
 ## Roadmap
 
 - [x] 1.0: Code field, SMS reading, verifying state and resend timer on Android, iOS and web
-- [ ] Phone number entry with the Android phone number hint
+- [x] 1.1: Phone number hint on Android
 
 ## Contributing
 

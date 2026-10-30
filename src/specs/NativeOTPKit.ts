@@ -6,6 +6,7 @@ export interface Spec extends TurboModule {
   startRetriever(): Promise<string>;
   stop(): void;
   getAppHash(): Promise<string>;
+  requestPhoneNumberHint(): Promise<string | null>;
 }
 
 export default TurboModuleRegistry.get<Spec>('OTPKit');
