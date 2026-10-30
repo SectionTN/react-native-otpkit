@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { extractCode } from '../extract';
+import { codeFromMessage, extractCode } from '../extract';
 
 describe('extractCode', () => {
   it('finds the code in a message', () =>
@@ -16,4 +16,11 @@ describe('extractCode', () => {
     expect(extractCode('Your code: AB12CD', 6, 'alphanumeric')).toBe('AB12CD');
     expect(extractCode('Your code', 4, 'alphanumeric')).toBeNull();
   });
+});
+
+describe('codeFromMessage', () => {
+  it('joins the valid characters when they make one code', () =>
+    expect(codeFromMessage('A1 B2 C3', 6, 'alphanumeric')).toBe('A1B2C3'));
+  it('needs a digit when it joins an alphanumeric code', () =>
+    expect(codeFromMessage('Thanks', 6, 'alphanumeric')).toBeNull());
 });

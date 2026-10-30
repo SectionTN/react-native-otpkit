@@ -2,12 +2,17 @@ import type { CodeType } from '../types';
 import { filterText, isAllowed } from './chars';
 import { normalizeDigits } from './digits';
 
+// An alphanumeric code needs a digit, so a word of the right length is not taken for one.
+function isCode(candidate: string, length: number, type: CodeType): boolean {
+  return candidate.length === length && (type !== 'alphanumeric' || /[0-9]/.test(candidate));
+}
+
 // The code in a message: its exact-length run, or all its valid characters when they make one code.
 export function codeFromMessage(text: string, length: number, type: CodeType): string | null {
   const code = extractCode(text, length, type);
   if (code) return code;
   const valid = filterText(normalizeDigits(text), type);
-  return valid.length === length ? valid : null;
+  return isCode(valid, length, type) ? valid : null;
 }
 
 export function extractCode(text: string, length: number, type: CodeType): string | null {
@@ -22,10 +27,5 @@ export function extractCode(text: string, length: number, type: CodeType): strin
     }
   }
   if (run) runs.push(run);
-  const needsDigit = type === 'alphanumeric';
-  return (
-    runs.find(
-      (candidate) => candidate.length === length && (!needsDigit || /[0-9]/.test(candidate)),
-    ) ?? null
-  );
+  return runs.find((candidate) => isCode(candidate, length, type)) ?? null;
 }
