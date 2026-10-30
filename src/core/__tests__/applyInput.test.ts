@@ -26,8 +26,12 @@ describe('applyInput', () => {
     expect(
       applyInput('', 'abc', { length: 3, type: 'alpha', transform: (t) => t.toUpperCase() }),
     ).toBe('ABC'));
-  it('keeps the rest after a deletion in the middle', () =>
-    expect(applyInput('123456', '12456', rules)).toBe('12456'));
+  it('appends a character typed before the end', () =>
+    expect(applyInput('12345', '162345', rules)).toBe('123456'));
+  it('deletes from the end when one character goes from the middle', () =>
+    expect(applyInput('123456', '12456', rules)).toBe('12345'));
+  it('keeps the rest when a selection in the middle is deleted', () =>
+    expect(applyInput('123456', '1256', rules)).toBe('1256'));
 });
 
 describe('sanitize', () => {

@@ -70,6 +70,20 @@ test('masks a secure code', { platforms: ['web'] }, async ({ app, screen }) => {
   await expect(screen.getByTestId('secure-cell-0')).toHaveText('•');
 });
 
+// A click can move a browser caret into the code, which native fields never allow.
+test('keeps typing at the end after a click on the first cell', { platforms: ['web'] }, async ({
+  app,
+  screen,
+}) => {
+  await app.restart();
+  await openTab(screen, 'looks');
+  const box = await input(screen, 'box');
+  await box.pressSequentially('12345', { delay: 50 });
+  await box.tap({ position: { x: 4, y: 28 } });
+  await box.pressSequentially('6');
+  await expect(screen.getByTestId('box-value')).toHaveText('box: 123456');
+});
+
 // Cells are hidden from the accessibility tree, so only the web engine can measure one.
 test('sizes the built-in cells from cellStyle', { platforms: ['web'] }, async ({ app, screen }) => {
   await app.restart();

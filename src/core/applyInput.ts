@@ -28,11 +28,18 @@ export function applyInput(previous: string, next: string, rules: InputRules): s
   if (next === previous) return previous;
   const start = commonPrefixLength(previous, next);
   const end = commonSuffixLength(previous.slice(start), next.slice(start));
-  const text = normalizeDigits((rules.transform ?? identity)(next.slice(start, next.length - end)));
+  const inserted = next.slice(start, next.length - end);
+  const removed = previous.length - start - end;
+  const text = normalizeDigits((rules.transform ?? identity)(inserted));
   const code = extractCode(text, rules.length, rules.type);
   if (code) return code;
   const valid = filterText(text, rules.type);
   if (valid.length >= rules.length) return valid.slice(0, rules.length);
+  // One typed or deleted character acts at the end, wherever a browser caret sits.
+  if (removed === 0 && Array.from(inserted).length === 1) {
+    return (previous + valid).slice(0, rules.length);
+  }
+  if (removed === 1 && inserted === '') return previous.slice(0, -1);
   return (previous.slice(0, start) + valid + previous.slice(previous.length - end)).slice(
     0,
     rules.length,
