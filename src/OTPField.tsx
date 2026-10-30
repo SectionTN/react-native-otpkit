@@ -20,6 +20,7 @@ import { useOTPField } from './useOTPField';
 import { usePropWarnings } from './usePropWarnings';
 import { useReduceMotion } from './useReduceMotion';
 import { useShake } from './useShake';
+import { useSmsFill } from './useSmsFill';
 import { useStatusAnnouncement } from './useStatusAnnouncement';
 
 const SIZE_KEYS = ['width', 'height', 'minWidth', 'maxWidth', 'minHeight', 'maxHeight'] as const;
@@ -109,11 +110,7 @@ export function OTPField(props: OTPFieldProps) {
     sender: smsSender,
   });
   const listenAgain = sms.start;
-
-  // A received message goes through the paste rules, then onComplete.
-  useEffect(() => {
-    if (sms.message != null) setValue(sms.message);
-  }, [sms.message, setValue]);
+  useSmsFill(sms.code, field.status, setValue);
 
   useImperativeHandle(
     ref,

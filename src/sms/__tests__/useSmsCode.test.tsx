@@ -122,6 +122,44 @@ describe('useSmsCode', () => {
     expect(result.current.status).toBe('idle');
   });
 
+  it('reads a code split by a space', async () => {
+    const sms = pending();
+    native.startConsent.mockReturnValue(sms.promise);
+    const { result } = setup({ mode: 'consent' });
+    await act(async () => sms.resolve('Your code is 123 456'));
+    expect(result.current.code).toBe('123456');
+  });
+
+  it('finds no code among the digits of several numbers', async () => {
+    const sms = pending();
+    native.startConsent.mockReturnValue(sms.promise);
+    const { result } = setup({ mode: 'consent' });
+    await act(async () => sms.resolve('Call 555-0100; code 123-456'));
+    expect(result.current.code).toBeNull();
+  });
+
+  it('reports no code when extract throws', async () => {
+    const sms = pending();
+    native.startConsent.mockReturnValue(sms.promise);
+    const extract = () => {
+      throw new Error('bad format');
+    };
+    const { result } = setup({ mode: 'consent', extract });
+    await act(async () => sms.resolve('Your code is 123456'));
+    expect(result.current).toMatchObject({ status: 'received', code: null });
+  });
+
+  it('leaves the listen of a newer hook alone when an older one unmounts', () => {
+    native.startConsent.mockReturnValue(pending().promise);
+    const older = setup({ mode: 'consent' });
+    const newer = setup({ mode: 'consent' });
+    native.stop.mockClear();
+    older.unmount();
+    expect(native.stop).not.toHaveBeenCalled();
+    newer.unmount();
+    expect(native.stop).toHaveBeenCalledTimes(1);
+  });
+
   it('uses a custom extract', async () => {
     const sms = pending();
     native.startConsent.mockReturnValue(sms.promise);

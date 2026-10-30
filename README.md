@@ -119,7 +119,7 @@ export function CodeStep(props: { verify: (code: string) => Promise<void>; resen
 | Function | Description |
 | --- | --- |
 | `useOTPField(options)` | Holds the field logic for an input and cells you draw yourself. Its options are the props from `length` to `onBlur`, and it returns `{ value, status, isFocused, cells, inputProps, focus, blur, clear, setValue }`. Spread `inputProps` on a `TextInput` laid over your cells at an opacity of `0.011`. iOS ignores touches on views below `0.01`. |
-| `useSmsCode({ mode, length, type, sender, extract, enabled })` | Listens for an SMS without a field and returns `{ code, message, status, start, stop }`. `extract(message)` replaces the default code search. With `enabled: false`, it waits for `start()`. |
+| `useSmsCode({ mode, length, type, sender, extract, enabled })` | Listens for an SMS without a field and returns `{ code, message, status, start, stop }`. `extract(message)` replaces the default code search, except on the web, where the browser hands over the code. With `enabled: false`, it waits for `start()`. |
 | `useResendTimer(seconds, { autoStart })` | Counts down for a resend button and returns `{ remaining, canResend, restart }`. It starts on mount unless `autoStart` is `false`. Time in the background counts. |
 | `getAppHash()` | Resolves to the 11-character hash a Retriever message must contain, or to `null` off Android. The hash comes from the signing key, so debug and release builds have different ones. |
 
@@ -131,7 +131,7 @@ The `status` from `useSmsCode` is one of:
 | --- | --- |
 | `idle` | Not listening yet, or stopped with `stop()`. |
 | `listening` | Waiting for a message. |
-| `received` | A message arrived. `message` holds its text, and `code` the first run of exactly `length` matching characters or `null`. |
+| `received` | A message arrived. `message` holds its text (on the web, the code), and `code` the code found in it, or `null`. |
 | `timeout` | No message arrived within five minutes. |
 | `denied` | The user declined the consent sheet, or the browser refused WebOTP. |
 | `unavailable` | SMS can't be read here: iOS, Expo Go, a browser without WebOTP or Android without Google Play services. |

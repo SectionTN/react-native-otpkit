@@ -158,7 +158,7 @@ export interface UseSmsCodeOptions {
   type?: CodeType;
   /** Consent mode only: the phone number the message must come from. */
   sender?: string;
-  /** Replaces the default extraction of the code from the message. */
+  /** Replaces the default extraction of the code from the message. Web skips it: WebOTP hands over the code. */
   extract?: (message: string) => string | null;
   /** Listen on mount. Default true. */
   enabled?: boolean;

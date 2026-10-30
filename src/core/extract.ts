@@ -1,6 +1,14 @@
 import type { CodeType } from '../types';
-import { isAllowed } from './chars';
+import { filterText, isAllowed } from './chars';
 import { normalizeDigits } from './digits';
+
+// The code in a message: its exact-length run, or all its valid characters when they make one code.
+export function codeFromMessage(text: string, length: number, type: CodeType): string | null {
+  const code = extractCode(text, length, type);
+  if (code) return code;
+  const valid = filterText(normalizeDigits(text), type);
+  return valid.length === length ? valid : null;
+}
 
 export function extractCode(text: string, length: number, type: CodeType): string | null {
   const runs: string[] = [];
