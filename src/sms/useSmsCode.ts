@@ -64,11 +64,8 @@ export function useSmsCode(options: UseSmsCodeOptions): SmsCodeState {
   useEffect(() => {
     if (!enabled) return;
     start();
-    return () => {
-      attempt.current += 1;
-      NativeOTPKit?.stop();
-    };
-  }, [enabled, mode, sender, start]);
+    return stop;
+  }, [enabled, mode, sender, start, stop]);
 
   return { ...state, start, stop };
 }

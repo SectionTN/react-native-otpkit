@@ -39,6 +39,19 @@ describe('useSmsCode on web', () => {
     expect(get.mock.calls[0]?.[0].signal.aborted).toBe(true);
   });
 
+  it('goes idle when enabled turns false while listening', async () => {
+    const get = stubWebOTP(() => new Promise(() => {}));
+    const { result, rerender } = renderHook(
+      (props: { enabled: boolean }) => useSmsCode({ mode: 'consent', enabled: props.enabled }),
+      { initialProps: { enabled: true } },
+    );
+    expect(result.current.status).toBe('listening');
+    rerender({ enabled: false });
+    await act(async () => {});
+    expect(get.mock.calls[0]?.[0].signal.aborted).toBe(true);
+    expect(result.current.status).toBe('idle');
+  });
+
   it('calls a rejection it did not cause a denial', async () => {
     stubWebOTP(() => Promise.reject(new DOMException('Denied', 'NotAllowedError')));
     const { result } = renderHook(() => useSmsCode({ mode: 'consent' }));

@@ -95,6 +95,15 @@ describe('useSmsCode', () => {
     expect(result.current.status).toBe('idle');
   });
 
+  it('goes idle when enabled turns false while listening', () => {
+    native.startConsent.mockReturnValue(pending().promise);
+    const { result, rerender } = setup({ mode: 'consent' });
+    expect(result.current.status).toBe('listening');
+    rerender({ mode: 'consent', enabled: false });
+    expect(native.stop).toHaveBeenCalled();
+    expect(result.current.status).toBe('idle');
+  });
+
   it('stops on unmount and drops a late result', async () => {
     const sms = pending();
     native.startConsent.mockReturnValue(sms.promise);

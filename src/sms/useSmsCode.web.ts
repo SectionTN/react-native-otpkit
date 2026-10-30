@@ -57,11 +57,8 @@ export function useSmsCode(options: UseSmsCodeOptions): SmsCodeState {
   useEffect(() => {
     if (!enabled) return;
     start();
-    return () => {
-      controller.current?.abort();
-      controller.current = null;
-    };
-  }, [enabled, start]);
+    return stop;
+  }, [enabled, start, stop]);
 
   return { ...state, start, stop };
 }
