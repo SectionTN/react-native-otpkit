@@ -32,6 +32,8 @@ class OTPKitModule(reactContext: ReactApplicationContext) :
 
   // Only touched on the main thread, where broadcasts and activity results arrive.
   private var session: Session? = null
+  // The session that opened the consent sheet, so a stale sheet never answers a newer one.
+  private var consentOwner: Session? = null
   private var resumed = false
 
   init {
@@ -140,6 +142,7 @@ class OTPKitModule(reactContext: ReactApplicationContext) :
       return
     }
     try {
+      consentOwner = target
       activity.startActivityForResult(consent, CONSENT_REQUEST)
     } catch (e: Exception) {
       end(target)?.promise?.reject(E_NATIVE, e.message, e)
@@ -148,7 +151,8 @@ class OTPKitModule(reactContext: ReactApplicationContext) :
 
   override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
     if (requestCode != CONSENT_REQUEST) return
-    val target = session ?: return
+    val target = consentOwner ?: return
+    consentOwner = null
     if (outcomeForConsent(resultCode) == SmsOutcome.DELIVER) {
       end(target)?.promise?.resolve(data?.getStringExtra(SmsRetriever.EXTRA_SMS_MESSAGE).orEmpty())
     } else {
