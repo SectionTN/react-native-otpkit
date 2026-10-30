@@ -2,7 +2,7 @@
 
 On Android, `OTPField` can fill itself from an incoming SMS through Google Play services. It doesn't add any permissions to your app. iOS has no API for this, and its keyboard already suggests codes from Messages for any `OTPField`.
 
-SMS reading needs native code, so in Expo it runs in a development build. Expo Go and devices without Google Play services report `unavailable`, and the field still works by hand.
+SMS reading needs native code, so in Expo it runs in a development build. Expo Go and devices without Google Play services report `unavailable`.
 
 ## Choose a mode
 

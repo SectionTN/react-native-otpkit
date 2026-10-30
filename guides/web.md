@@ -26,7 +26,7 @@ Your code is 123456
 
 The browser asks the user to allow the code, then hands over only the code, never the message. So `message` and `code` from `useSmsCode` are the same, and `extract` and `sender` don't apply.
 
-Browsers without WebOTP report `unavailable`, and the field still works by hand.
+Browsers without WebOTP report `unavailable`.
 
 ## Native-only functions
 

@@ -47,7 +47,7 @@ Requirements:
 - iOS 15.1+
 - Android 7.0+ (API 24)
 - Web: react-native-web 0.21+
-- Expo: a development build for SMS reading (Expo Go runs the field without it)
+- Expo: a development build for SMS reading
 
 ## Usage
 
