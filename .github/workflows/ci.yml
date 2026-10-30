@@ -7,55 +7,189 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  lint:
+  check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Lint files
+      - name: Lint
         run: yarn lint
 
-      - name: Typecheck files
+      - name: Typecheck
         run: yarn typecheck
 
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup
-        uses: ./.github/actions/setup
-
-      - name: Run unit tests
-        run: yarn test --maxWorkers=2 --coverage
-
-  build-library:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup
-        uses: ./.github/actions/setup
+      - name: Unit tests
+        run: yarn test
 
       - name: Build package
         run: yarn prepare
 
-  build-web:
+  android:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Build example for Web
+      - name: Install JDK
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        with:
+          distribution: zulu
+          java-version: "17"
+
+      - name: Cache Gradle
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: |
+            ~/.gradle/wrapper
+            ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Prebuild the example
+        working-directory: example
+        run: npx expo prebuild --platform android --no-install
+
+      - name: Kotlin unit tests
+        working-directory: example/android
+        run: ./gradlew :react-native-otpkit:testDebugUnitTest --no-daemon
+
+      - name: Build the release app for the emulator
+        working-directory: example/android
+        run: ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=x86_64
+
+      - name: Enable KVM
         run: |
-          yarn example expo export:web
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: End-to-end tests
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        env:
+          E2E_TELEMETRY_DISABLED: "1"
+          OTPKIT_APP_PATH: example/android/app/build/outputs/apk/release/app-release.apk
+        with:
+          api-level: 35
+          arch: x86_64
+          target: google_apis
+          # The default 320x640 dp screen is smaller than any current phone.
+          profile: pixel_6
+          script: |
+            yarn e2e --target android || (mkdir -p .e2e/artifacts; adb logcat -d > .e2e/artifacts/logcat.txt; adb shell dumpsys window | grep -E 'mCurrentFocus|mFocusedApp' > .e2e/artifacts/focus.txt; exit 1)
+
+      - name: Upload e2e artifacts
+        # The report also keeps the errors of attempts a retry passed.
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-android
+          path: .e2e
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 7
+
+  ios:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Use Xcode 26
+        uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd # v1.6.0
+        with:
+          xcode-version: 26
+
+      - name: Prebuild the example
+        working-directory: example
+        run: npx expo prebuild --platform ios
+
+      - name: Build the release app for the simulator
+        working-directory: example/ios
+        run: >
+          xcodebuild -workspace OTPKitExample.xcworkspace -scheme OTPKitExample
+          -configuration Release -sdk iphonesimulator
+          -destination 'generic/platform=iOS Simulator'
+          -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
+
+      - name: Boot the simulator and build the test runner
+        id: simulator
+        timeout-minutes: 30
+        run: |
+          udid=$(xcrun simctl create otpkit-e2e "iPhone 17" "iOS$(xcrun --sdk iphonesimulator --show-sdk-version)")
+          echo "udid=$udid" >> "$GITHUB_OUTPUT"
+          # agent-device's own cold boot builds its runner alongside and fails a 15 s simctl check.
+          xcrun simctl bootstatus "$udid" -b
+          # A cold runner build outlasts the e2e daemon's request timeout.
+          npx agent-device prepare ios-runner --platform ios --udid "$udid" --timeout 900000
+          npx agent-device daemon stop
+
+      - name: End-to-end tests
+        env:
+          E2E_IOS_DEVICE: ${{ steps.simulator.outputs.udid }}
+          E2E_TELEMETRY_DISABLED: "1"
+          OTPKIT_APP_PATH: example/ios/build/Build/Products/Release-iphonesimulator/OTPKitExample.app
+        run: yarn e2e --target ios
+
+      - name: Upload e2e artifacts
+        # The report also keeps the errors of attempts a retry passed.
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-ios
+          path: .e2e
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 7
+
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Export the example for web
+        run: yarn e2e:web:build
+
+      - name: Install the browsers
+        run: npx --yes playwright-core@1.63.0 install --with-deps chromium webkit
+
+      - name: End-to-end tests on Chromium
+        env:
+          E2E_TELEMETRY_DISABLED: "1"
+        run: yarn e2e --target web
+
+      - name: End-to-end tests on WebKit
+        if: ${{ !cancelled() }}
+        env:
+          E2E_TELEMETRY_DISABLED: "1"
+        run: yarn e2e --target web-webkit
+
+      - name: Upload e2e artifacts
+        # The report also keeps the errors of attempts a retry passed.
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-web
+          path: .e2e
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 7

@@ -1,0 +1,33 @@
+{
+  "name": "react-native-otpkit-example",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "@expo/metro-runtime": "~58.0.15",
+    "expo": "~58.0.20",
+    "expo-status-bar": "~58.0.4",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-native": "0.88.1",
+    "react-native-keyboard-controller": "1.22.7",
+    "react-native-reanimated": "4.7.1",
+    "react-native-safe-area-context": "~5.10.1",
+    "react-native-web": "~0.21.4",
+    "react-native-worklets": "0.13.0"
+  },
+  "scripts": {
+    "start": "expo start --dev-client",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "build:ios": "xcodebuild ONLY_ACTIVE_ARCH=YES -workspace ios/OTPKitExample.xcworkspace -UseNewBuildSystem=YES -scheme OTPKitExample -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -quiet",
+    "build:android": "cd android && ./gradlew assembleDebug -DtestBuildType=debug -Dorg.gradle.jvmargs=-Xmx4g",
+    "build:web": "expo export --platform web"
+  },
+  "private": true,
+  "devDependencies": {
+    "babel-plugin-react-compiler": "1.0.0",
+    "react-native-builder-bob": "^0.44.1",
+    "react-native-monorepo-config": "^0.4.0"
+  }
+}
