@@ -36,6 +36,8 @@ export function useOTPField(options: UseOTPFieldOptions = {}): OTPFieldState {
 
   const value = sanitize(options.value ?? internal, rules);
   const status = options.status ?? internalStatus;
+  // The last value the field set itself; anything else came from a controlled value.
+  const own = useRef(value);
 
   const latest = useRef({ options, rules, value, status, internalStatus, disabled });
   useLayoutEffect(() => {
@@ -55,6 +57,7 @@ export function useOTPField(options: UseOTPFieldOptions = {}): OTPFieldState {
       cancelPending();
       if (current.internalStatus !== 'idle') setInternalStatus('idle');
       current.value = next;
+      own.current = next;
       setInternal(next);
       current.options.onChange?.(next);
     },
@@ -93,6 +96,7 @@ export function useOTPField(options: UseOTPFieldOptions = {}): OTPFieldState {
     }
     if (current.value === '') return;
     current.value = '';
+    own.current = '';
     setInternal('');
     current.options.onChange?.('');
   }, [cancelPending]);
@@ -108,6 +112,12 @@ export function useOTPField(options: UseOTPFieldOptions = {}): OTPFieldState {
   }, []);
 
   useEffect(() => {
+    // A new controlled value ends a pending check and a pending error clear.
+    if (value !== own.current) {
+      own.current = value;
+      cancelPending();
+      if (latest.current.internalStatus === 'verifying') setInternalStatus('idle');
+    }
     const code = value.length === length ? value : null;
     const last = completed.current;
     completed.current = code;
@@ -142,7 +152,7 @@ export function useOTPField(options: UseOTPFieldOptions = {}): OTPFieldState {
     } else if (options.blurOnComplete) {
       inputRef.current?.blur();
     }
-  }, [value, length, clear, focus]);
+  }, [value, length, clear, focus, cancelPending]);
 
   useEffect(() => cancelPending, [cancelPending]);
 

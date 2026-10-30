@@ -135,6 +135,30 @@ describe('useOTPField', () => {
     expect(result.current.status).toBe('idle');
   });
 
+  it('drops a pending check when the parent changes a controlled value', async () => {
+    const verify = deferred();
+    const options: UseOTPFieldOptions = { value: '', onComplete: () => verify.promise };
+    const { result, rerender } = setup(options);
+    rerender({ ...options, value: '123456' });
+    expect(result.current.status).toBe('verifying');
+    rerender({ ...options, value: '' });
+    expect(result.current.status).toBe('idle');
+    await act(async () => verify.resolve());
+    expect(result.current.status).toBe('idle');
+  });
+
+  it('keeps a controlled value the parent sets during the error delay', async () => {
+    vi.useFakeTimers();
+    const onChange = vi.fn();
+    const options: UseOTPFieldOptions = { value: '', onChange, onComplete: fail };
+    const { rerender } = setup(options);
+    rerender({ ...options, value: '123456' });
+    await flush();
+    rerender({ ...options, value: '12' });
+    act(() => vi.advanceTimersByTime(ERROR_CLEAR_DELAY_MS));
+    expect(onChange).not.toHaveBeenCalledWith('');
+  });
+
   it('calls onComplete when a different full code replaces a full one', async () => {
     const onComplete = vi.fn(fail);
     const { result, type } = setup({ onComplete, clearOnError: false });
