@@ -7,6 +7,14 @@ export function resolveLength(length?: number): number {
   return length !== undefined && Number.isInteger(length) && length > 0 ? length : DEFAULT_LENGTH;
 }
 
+export type CellContent = 'char' | 'caret' | 'placeholder' | 'none';
+
+export function cellContent(cell: Cell, caret: boolean, placeholder?: string): CellContent {
+  if (cell.isFilled) return 'char';
+  if (cell.isActive && caret) return 'caret';
+  return placeholder ? 'placeholder' : 'none';
+}
+
 export function buildCells(
   value: string,
   state: { length: number; isFocused: boolean; status: OTPStatus; secure: boolean },

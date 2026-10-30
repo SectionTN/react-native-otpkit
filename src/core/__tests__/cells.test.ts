@@ -1,5 +1,20 @@
 import { describe, expect, it } from 'vitest';
-import { buildCells, resolveLength } from '../cells';
+import { buildCells, cellContent, resolveLength } from '../cells';
+
+const activeEmpty = {
+  index: 0,
+  char: '',
+  isFilled: false,
+  isActive: true,
+  status: 'idle',
+} as const;
+
+describe('cellContent', () => {
+  it('shows the placeholder in the active cell without a caret', () =>
+    expect(cellContent(activeEmpty, false, '•')).toBe('placeholder'));
+  it('draws the caret instead of the placeholder in the active cell', () =>
+    expect(cellContent(activeEmpty, true, '•')).toBe('caret'));
+});
 
 const base = { length: 4, isFocused: true, status: 'idle', secure: false } as const;
 

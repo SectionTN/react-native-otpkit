@@ -7,6 +7,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { Caret } from './Caret';
+import { cellContent } from './core/cells';
 import { metrics, type Palette } from './theme';
 import type { Cell } from './types';
 
@@ -46,7 +47,7 @@ export function DefaultCell(props: DefaultCellProps) {
           backgroundColor: disabled ? palette.disabled : palette.cell,
         }
       : { borderBottomWidth: borderWidth };
-  const showPlaceholder = !cell.isFilled && !cell.isActive && Boolean(placeholder);
+  const content = cellContent(cell, props.caret, placeholder);
 
   return (
     <View
@@ -62,11 +63,11 @@ export function DefaultCell(props: DefaultCellProps) {
         disabled && props.disabledCellStyle,
       ]}
     >
-      {cell.isFilled ? (
+      {content === 'char' ? (
         <Text style={[styles.text, { color: palette.text }, props.textStyle]}>{cell.char}</Text>
-      ) : cell.isActive && props.caret ? (
+      ) : content === 'caret' ? (
         <Caret color={palette.caret} reduceMotion={props.reduceMotion} style={props.caretStyle} />
-      ) : showPlaceholder ? (
+      ) : content === 'placeholder' ? (
         <Text
           style={[
             styles.text,
